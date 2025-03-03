@@ -64,7 +64,7 @@ def main():
                             f"Could not find all files from config ({FILES}) in response.\nPlease check your config ({CONFIG_FILE})."
                         )
                     message = (
-                        'Downloading custom set of dataset_files (see "FILES" config):'
+                        'Downloading custom set of files (see "FILES" config):'
                     )
 
                 print(f'\n{message}\n{len(message)* "-"}')
