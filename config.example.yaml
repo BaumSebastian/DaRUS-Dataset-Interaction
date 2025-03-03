@@ -1,5 +1,5 @@
-PATH: "~/your/path/to/data" # Needs to be adjusted
-FILES: []                   # Keep empty list to download all files. If download only a specific file, insert filename in list.
-API_TOKEN:                  #Leave empty if authorization not needed.
+PATH: "~/your/path/to/data"  # Needs to be adjusted
+FILES: []  # Empty list to download all files (insert filename for specific download).
+API_TOKEN: ""  # Leave empty if authorization not needed.
 SERVER_URL: "https://darus.uni-stuttgart.de"
 PERSISTENT_IDENTIFIER: "doi:10.18419/DARUS-4801"
