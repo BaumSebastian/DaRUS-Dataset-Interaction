@@ -63,7 +63,7 @@ class Downloader():
             self.download_files = list(
                 map(
                     lambda item_info: DatasetFile(
-                        item_infos, self.url
+                        item_info, self.url
                     ),
                     file_info,
                 )
@@ -150,4 +150,4 @@ if __name__ == '__main__':
 
     dl = Downloader(URL, HEADER, FILES)
     #dl.summary()
-    dl.start_download()
+    #dl.start_download()
