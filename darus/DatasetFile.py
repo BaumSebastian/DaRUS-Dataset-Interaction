@@ -29,6 +29,9 @@ class DatasetFile:
         self.server_url = server_url
         self._url = f"{self.server_url}/api/access/datafile/{self.__id}"
 
+        
+        print(json)
+
         if not validators.url(self._url):
             raise ValueError(f"The url {self._url} is not valid.")
 
@@ -40,7 +43,7 @@ class DatasetFile:
         """Returns the md5 hash value of the file"""
         return self.__hash
 
-    def get_dataset_filesize(self, pretty: bool = True) -> str:
+    def get_filesize(self, pretty: bool = True) -> str:
         """
         Returns the size of the file
 
