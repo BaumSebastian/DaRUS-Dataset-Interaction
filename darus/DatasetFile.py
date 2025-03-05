@@ -21,19 +21,23 @@ class DatasetFile:
         :raise KeyError: If a required key is not in json. See get_required_keys for a list of the keys.
         :raise ValueError: If the server_url concatenated with the other information is not a valid url.
         """
-        self.__id = json["id"]
-        self.__persistentId = json["persistentId"]
-        self.__filesize = json["filesize"]
-        self.name = json["filename"]
-        self.__hash = json["checksum"]["value"]
+        print(json)
+        data_file = json['dataFile']
+        self.__id = data_file["id"]
+        self.__persistentId = data_file["persistentId"]
+        self.__filesize = data_file["filesize"]
+        self.name = data_file["filename"]
+        self.__hash = data_file["checksum"]["value"]
         self.server_url = server_url
         self._url = f"{self.server_url}/api/access/datafile/{self.__id}"
 
-        
-        print(json)
 
         if not validators.url(self._url):
             raise ValueError(f"The url {self._url} is not valid.")
+
+    def __str__(self) -> str:
+        """Overrides implementation of string"""
+        return f"{self.name}"
 
     def get_required_keys(self) -> Tuple[str]:
         """Returns the required keys in the json object passed to the constructor"""
