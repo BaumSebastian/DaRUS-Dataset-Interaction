@@ -1,5 +1,6 @@
 from typing import Tuple
 import warnings
+import zipfile
 import validators
 import hashlib
 import humanize
@@ -143,3 +144,8 @@ class DatasetFile:
         else:
             warnings.warn(f"Attempt to delete '{self.name}' failed. File not found in {self.__filepath}.")
 
+    def extract_file(self):
+        """Extracts the file, if it ends with .zip"""
+        if self.__filepath and os.path.isfile(self.__filepath) and self.__filepath.suffix == '.zip':
+            with zipfile.ZipFile(self.__filepath.suffix, 'r') as zip_ref:
+                zip_ref.extractall(self.__filepath.parent)
