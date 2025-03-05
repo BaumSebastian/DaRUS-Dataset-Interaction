@@ -1,4 +1,5 @@
 from typing import Tuple
+import warnings
 import validators
 import hashlib
 import humanize
@@ -34,7 +35,8 @@ class DatasetFile:
         self.__hash = data_file["checksum"]["value"]
         self.server_url = server_url
         self._url = f"{self.server_url}/api/access/datafile/{self.__id}"
-
+        
+        self.__file_path = None # Will be set if downloaded successfully
 
         if not validators.url(self._url):
             raise ValueError(f"The url {self._url} is not valid.")
@@ -102,6 +104,9 @@ class DatasetFile:
 
             successful = self.validate(file_path)
 
+            if successful:
+                self.__file_path = file_path
+
         except FileExistsError as fe:
             print(f"The subdirectory '{dir}' could not be created, but is expected from {self.name}.")
 
@@ -122,3 +127,19 @@ class DatasetFile:
             md5_hash = hashlib.md5(f.read()).hexdigest()
 
         return md5_hash == hash
+
+    def remove_file(self):
+        """
+        Removes the downloaded file.
+        """
+         
+        if self.__filepath and os.path.isfile(self.__filepath):
+            try:
+                os.remove(self.__filepath)
+            except OsError as e:
+                print(f"Error while trying to delete {self.__filepath}")
+            else:
+                print(f"File '{self.__filepath}' successfully deleted.")
+        else:
+            warnings.warn(f"Attempt to delete '{self.name}' failed. File not found in {self.__filepath}.")
+
