@@ -6,6 +6,7 @@ from tqdm.auto import tqdm
 from typing import Tuple
 import requests
 import os
+from pathlib import Path
 
 
 class DatasetFile:
@@ -22,6 +23,9 @@ class DatasetFile:
         :raise ValueError: If the server_url concatenated with the other information is not a valid url.
         """
         print(json)
+        self.__description = json['description']
+        self.__sub_dir = json['directoryLabel'] if 'directoryLabel' in json else "" 
+
         data_file = json['dataFile']
         self.__id = data_file["id"]
         self.__persistentId = data_file["persistentId"]
@@ -37,7 +41,7 @@ class DatasetFile:
 
     def __str__(self) -> str:
         """Overrides implementation of string"""
-        return f"{self.name}"
+        return f"{self.name} - {self.get_filesize} - {self.__description}"
 
     def get_required_keys(self) -> Tuple[str]:
         """Returns the required keys in the json object passed to the constructor"""
@@ -77,20 +81,31 @@ class DatasetFile:
         if block_size <= 0:
             raise ValueError("block_size must be >0.")
 
-        file_path = os.path.join(path, self.name)
-        print(f"Downloading {file_path}...")
+        successful = False 
+        try:
+            dir = (Path(path) / self.__sub_dir)
+            dir.mkdir(parents=True, exist_ok=True)
 
-        response = requests.get(self._url, headers=header, stream=True)
+            file_path = dir / self.name
+            
+            print(f"Downloading {file_path}...")
 
-        with tqdm(
-            total=self.__filesize, unit="B", unit_scale=True, dynamic_ncols=True
-        ) as progress_bar:
-            with open(file_path, "wb") as file:
-                for data in response.iter_content(block_size):
-                    progress_bar.update(len(data))
-                    file.write(data)
+            response = requests.get(self._url, headers=header, stream=True)
 
-        return self.validate(file_path)
+            with tqdm(
+                total=self.__filesize, unit="B", unit_scale=True, dynamic_ncols=True
+            ) as progress_bar:
+                with open(file_path, "wb") as file:
+                    for data in response.iter_content(block_size):
+                        progress_bar.update(len(data))
+                        file.write(data)
+
+            successful = self.validate(file_path)
+
+        except FileExistsError as fe:
+            print(f"The subdirectory '{dir}' could not be created, but is expected from {self.name}.")
+
+        return successful
 
     def validate(self, file_path) -> bool:
         """
