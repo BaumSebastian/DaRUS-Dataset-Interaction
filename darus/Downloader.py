@@ -130,24 +130,4 @@ class Downloader():
 #               print("Error while trying to download.")
 #               print(err)
 
-if __name__ == '__main__':
-    
-    PATH= r"C:\A"  # Needs to be adjusted
-    FILES= []  # Empty list to download all files (insert filename for specific download).
-    API_TOKEN= ""  # Leave empty if authorization not needed.
-    SERVER_URL= "https://darus.uni-stuttgart.de"
-    PERSISTENT_IDENTIFIER= "doi:10.18419/DARUS-4801"
-    #PERSISTENT_IDENTIFIER= "doi:10.18419/DARUS-4353"
 
-    URL = f"{SERVER_URL}/api/datasets/:persistentId/?persistentId={PERSISTENT_IDENTIFIER}"
-
-    # Add API token if needed for authentification.
-    HEADER = None
-    API_TOKEN = "e5ae7e4e-5d30-4a82-8845-95d3b9436afe"
-
-    if API_TOKEN:
-        HEADER = {"X-Dataverse-key": API_TOKEN}
-
-    dl = Downloader(URL, HEADER, FILES)
-    #dl.summary()
-    #dl.start_download()
