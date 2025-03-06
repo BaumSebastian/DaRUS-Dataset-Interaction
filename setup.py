@@ -9,4 +9,5 @@ setup(
     license="GNUv3",
     packages=["darus"],
     zip_safe=False,
+    install_requires=['requests', 'validators', 'humanize', 'tqdm'],
 )
