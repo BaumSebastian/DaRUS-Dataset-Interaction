@@ -7,6 +7,7 @@ from pathlib import Path
 
 # Custom import
 from .DatasetFile import DatasetFile
+from .utils import dir_exists
 
 class Downloader():
     def __init__(self, url:str, header:dict={}, specific_files:list=[]):
@@ -92,29 +93,29 @@ class Downloader():
         Starts the download
         """
         path = Path(path)
-        message = "Downloading:"
-
-        # Check if user wants to download only specific files 
-        if self.specific_files:
-            self.download_files = [f for f in self.download_files if f.name in self.specific_files]
-
-            if len(self.download_files) != len(self.specific_files):
-                warnings.warn("Couln't not get all specific files. The specified files are not all in the url")
-
-            message = (
-                'Downloading custom set of files (see "FILES" config):'
-            )
-
-        print(f'\n{message}\n{len(message)* "-"}')
-        print(
-            *map(
-                lambda file: f"-{file.name} [{file.get_filesize()}]",
-                self.download_files,
-            ),'\n',
-            sep="\n",
-        )
         if dir_exists(path):
             if len(self.download_files) > 0:
+                message = "Downloading:"
+
+                # Check if user wants to download only specific files 
+                if self.specific_files:
+                    self.download_files = [f for f in self.download_files if f.name in self.specific_files]
+
+                    if len(self.download_files) != len(self.specific_files):
+                        warnings.warn("Couln't not get all specific files. The specified files are not all in the url")
+
+                    message = (
+                        'Downloading custom set of files (see "FILES" config):'
+                    )
+
+                print(f'\n{message}\n{len(message)* "-"}')
+                print(
+                    *map(
+                        lambda file: f"-{file.name} [{file.get_filesize()}]",
+                        self.download_files,
+                    ),'\n',
+                    sep="\n",
+                )
                 for f in self.download_files:
                     successful = True
                     #successful = f.download(path=PATH, header=header)
