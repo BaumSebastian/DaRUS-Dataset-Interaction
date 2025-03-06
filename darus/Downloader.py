@@ -4,6 +4,7 @@ import requests
 import validators
 import warnings
 from pathlib import Path
+from urllib.parse import urlparse
 
 # Custom import
 from .DatasetFile import DatasetFile
@@ -36,7 +37,10 @@ class Downloader():
         self.specific_files = specific_files
         self.downloading_files=[]
         self.header = header
-        self.url = url 
+
+        self.url = urlparse(url)
+        self.server_url =  self.url._replace(path='', params='', query='', fragment='').geturl()
+        self.dataset_url = self.url._replace(path='/api/datasets/:persistentId/').geturl()
 
         # Dataset information
         self.persistent_id=None
@@ -51,7 +55,7 @@ class Downloader():
         """ Extracts the dataset information from the url. """
 
         try:
-            r = requests.get(self.url, headers=self.header)
+            r = requests.get(self.dataset_url, headers=self.header)
             r.raise_for_status()
 
             dataset_info = json.loads(r.text)["data"]["latestVersion"]
@@ -60,12 +64,14 @@ class Downloader():
             self.last_update_time=dataset_info['lastUpdateTime']
             self.create_time=dataset_info["createTime"]
             self.license_name=dataset_info["license"]["name"]
+            
+            print(self.url)
 
             file_info = dataset_info['files']
             self.download_files = list(
                 map(
                     lambda item_info: DatasetFile(
-                        item_info, self.url
+                        item_info, self.server_url
                     ),
                     file_info,
                 )
