@@ -75,7 +75,7 @@ class Downloader():
                 )
             )
         except KeyError as ke:
-            print(f"An error occured while trying to access web response.\n{ke}\nThe Dataloader will abort in order to avoid unwanted behaviour.")
+            print(f"Couldn't find following key in web response:{ke}\nThe Dataloader will abort in order to avoid unwanted behaviour.")
             self.download_files=[]
         except requests.HTTPError as exception: # Captures response.raise_for_status() - 4xx or 5xx status code. If you remove this, then code will use generic handle        
             print(f"An error occured while trying to access dataset.\n{str(exception)}\nThe Dataloader will abort in order to avoid unwanted behaivour.")
