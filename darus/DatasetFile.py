@@ -145,13 +145,12 @@ class DatasetFile:
         Removes the downloaded file.
         """
          
-        if self.__file_path and os.path.isfile(self.__filepath):
+        if self.__file_path and os.path.isfile(self.__file_path):
             try:
                 os.remove(self.__file_path)
             except OsError as e:
                 print(f"Error while trying to delete {self.__file_path}")
             else:
-                print(f"File '{self.__file_path}' successfully deleted.")
                 return True
         else:
             warnings.warn(f"Attempt to delete '{self.name}' failed. File not found in {self.__file_path}.")
@@ -160,9 +159,13 @@ class DatasetFile:
     def extract_file(self):
         """Extracts the file, if it ends with .zip"""
         if self.__file_path and os.path.isfile(self.__file_path) and self.__file_path.suffix == '.zip':
-            print(self.__file_path, self.__file_path.suffix, self.__file_path.parent)
-            with zipfile.ZipFile(self.__file_path, 'r') as zip_ref:
-                zip_ref.extractall(self.__file_path.parent)
-            return True
+            try:
+                with zipfile.ZipFile(self.__file_path, 'r') as zip_ref:
+                    zip_ref.extractall(self.__file_path.parent)
+            except Exception as e:
+                print(f"Error while trying to extrac {self.name}.\n{e}")
+                return False
+            else:
+                return True
         else:
             return False 

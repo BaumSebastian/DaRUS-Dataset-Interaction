@@ -65,8 +65,6 @@ class Downloader():
             self.create_time=dataset_info["createTime"]
             self.license_name=dataset_info["license"]["name"]
             
-            print(self.url)
-
             file_info = dataset_info['files']
             self.download_files = list(
                 map(
@@ -122,7 +120,7 @@ class Downloader():
                 print(f'\n{message}\n{len(message)* "-"}')
                 print(
                     *map(
-                        lambda file: f"-{file.name} [{file.get_filesize()}]",
+                        lambda file: " - " + str(file),
                         self.download_files,
                     ),'\n',
                     sep="\n",
@@ -130,12 +128,10 @@ class Downloader():
                 for f in self.download_files:
                     successful = f.download(path, header=self.header)
                     if successful:
-                        print(
-                            f"Download '{f.name}' successful (hash: {f.get_hash()})"
-                        )
                         if post_process:
-                            print("extracting file")
-                            f.extract_file()
+                            extract_succ = f.extract_file()
+                            if remove_after_pp and extract_succ:
+                                del_succ = f.remove_file()
                     else:
                         print(f"Downloading {f.name} not successful.")
             else:
