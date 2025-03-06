@@ -25,9 +25,9 @@ class DatasetFile:
         :raise KeyError: If a required key is not in json. See get_required_keys for a list of the keys.
         :raise ValueError: If the server_url concatenated with the other information is not a valid url.
         """
-        self.__description = json['description'] if 'description' in json else ""
-        self.__sub_dir = json['directoryLabel'] if 'directoryLabel' in json else "" 
-        data_file = json['dataFile']
+        self.__description = json["description"] if "description" in json else ""
+        self.__sub_dir = json["directoryLabel"] if "directoryLabel" in json else ""
+        data_file = json["dataFile"]
         self.__id = data_file["id"]
         self.__persistentId = data_file["persistentId"]
         self.__filesize = data_file["filesize"]
@@ -35,14 +35,16 @@ class DatasetFile:
         self.__hash = data_file["checksum"]["value"]
         self.parsed_server_url = urlparse(server_url)
 
-        self._url = self.parsed_server_url._replace(path=f'api/access/datafile/{self.__id}/', query=str('format=original')).geturl()
+        self._url = self.parsed_server_url._replace(
+            path=f"api/access/datafile/{self.__id}/", query=str("format=original")
+        ).geturl()
 
-        # Check for original file 
-        if 'originalFileName' in data_file:
-            self._url = urlparse(self._url)._replace(query='format=original').geturl()
-            self.name = data_file['originalFileName']
+        # Check for original file
+        if "originalFileName" in data_file:
+            self._url = urlparse(self._url)._replace(query="format=original").geturl()
+            self.name = data_file["originalFileName"]
 
-        self.__file_path = None # Will be set if downloaded successfully
+        self.__file_path = None  # Will be set if downloaded successfully
 
         if not validators.url(self._url):
             raise ValueError(f"The url {self._url} is not valid.")
@@ -89,13 +91,13 @@ class DatasetFile:
         if block_size <= 0:
             raise ValueError("block_size must be >0.")
 
-        successful = False 
+        successful = False
         try:
-            dir = (Path(path) / self.__sub_dir)
+            dir = Path(path) / self.__sub_dir
             dir.mkdir(parents=True, exist_ok=True)
 
             file_path = dir / self.name
-            
+
             print(f"Downloading {file_path}...")
 
             response = requests.get(self._url, headers=header, stream=True)
@@ -115,9 +117,13 @@ class DatasetFile:
                 self.__file_path = file_path
 
         except FileExistsError as fe:
-            print(f"The subdirectory '{dir}' could not be created, but is expected from {self.name}.")
+            print(
+                f"The subdirectory '{dir}' could not be created, but is expected from {self.name}."
+            )
         except requests.exceptions.HTTPError as he:
-            print(f"Error wile trying to download '{self.name}' from '{self._url}'.\n{he}")
+            print(
+                f"Error wile trying to download '{self.name}' from '{self._url}'.\n{he}"
+            )
         except Exception as e:
             print(f"Uncatched error.\n{e}")
 
@@ -133,7 +139,7 @@ class DatasetFile:
         :return: True if the hashes are the same, False otherwise.
         :rtype: bool
         """
-        
+
         hash = self.__hash
         with open(file_path, "rb") as f:
             md5_hash = hashlib.md5(f.read()).hexdigest()
@@ -143,7 +149,7 @@ class DatasetFile:
         """
         Removes the downloaded file.
         """
-         
+
         if self.__file_path and os.path.isfile(self.__file_path):
             try:
                 os.remove(self.__file_path)
@@ -152,14 +158,20 @@ class DatasetFile:
             else:
                 return True
         else:
-            warnings.warn(f"Attempt to delete '{self.name}' failed. File not found in {self.__file_path}.")
+            warnings.warn(
+                f"Attempt to delete '{self.name}' failed. File not found in {self.__file_path}."
+            )
             return False
 
     def extract_file(self):
         """Extracts the file, if it ends with .zip"""
-        if self.__file_path and os.path.isfile(self.__file_path) and self.__file_path.suffix == '.zip':
+        if (
+            self.__file_path
+            and os.path.isfile(self.__file_path)
+            and self.__file_path.suffix == ".zip"
+        ):
             try:
-                with zipfile.ZipFile(self.__file_path, 'r') as zip_ref:
+                with zipfile.ZipFile(self.__file_path, "r") as zip_ref:
                     zip_ref.extractall(self.__file_path.parent)
             except Exception as e:
                 print(f"Error while trying to extrac {self.name}.\n{e}")
@@ -167,4 +179,4 @@ class DatasetFile:
             else:
                 return True
         else:
-            return False 
+            return False
