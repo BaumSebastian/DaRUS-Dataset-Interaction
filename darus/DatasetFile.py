@@ -50,7 +50,7 @@ class DatasetFile:
 
     def __str__(self) -> str:
         """Overrides implementation of string"""
-        return f"{self.name} - {self.get_filesize} - {self.__description}"
+        return f"{self.name} [{self.get_filesize()}]: {self.__description}"
 
     def get_required_keys(self) -> Tuple[str]:
         """Returns the required keys in the json object passed to the constructor"""
