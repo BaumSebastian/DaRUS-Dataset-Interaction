@@ -25,8 +25,7 @@ class DatasetFile:
         :raise KeyError: If a required key is not in json. See get_required_keys for a list of the keys.
         :raise ValueError: If the server_url concatenated with the other information is not a valid url.
         """
-
-        self.__description = json['description']
+        self.__description = json['description'] if 'description' in json else ""
         self.__sub_dir = json['directoryLabel'] if 'directoryLabel' in json else "" 
         data_file = json['dataFile']
         self.__id = data_file["id"]
