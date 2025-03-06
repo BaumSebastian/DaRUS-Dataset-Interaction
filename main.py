@@ -23,14 +23,11 @@ def main():
     )
 
     # Add API token if needed for authentification.
-    header = None
-    API_TOKEN = config["API_TOKEN"]
+    API_TOKEN = config['API_TOKEN']
+    HEADER = {"X-Dataverse-key": API_TOKEN} if API_TOKEN else None
 
-    if API_TOKEN:
-        header = {"X-Dataverse-key": API_TOKEN}
-
-    dl = Downloader(URL, header, FILES)
-    dl.start_download()
+    dl = Downloader(URL, HEADER, FILES)
+    dl.start_download(PATH)
 
 if __name__ == "__main__":
     main()

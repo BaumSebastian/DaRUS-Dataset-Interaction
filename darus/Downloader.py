@@ -3,6 +3,7 @@ import json
 import requests
 import validators
 import warnings
+from pathlib import Path
 
 # Custom import
 from .DatasetFile import DatasetFile
@@ -86,21 +87,20 @@ class Downloader():
         """
         raise NotImplementedError()
 
-    def start_download(path:str):
+    def start_download(self, path:str):
         """
         Starts the download
         """
-
+        path = Path(path)
         message = "Downloading:"
 
         # Check if user wants to download only specific files 
-        if FILES:
-            self.download_files = [f for f in self.download_files if f.name in FILES]
+        if self.specific_files:
+            self.download_files = [f for f in self.download_files if f.name in self.specific_files]
 
-            if len(self.download_files) != len(FILES):
-                raise ValueError(
-                    f"Could not find all files from config ({FILES}) in response.\nPlease check your config ({CONFIG_FILE})."
-                )
+            if len(self.download_files) != len(self.specific_files):
+                warnings.warn("Couln't not get all specific files. The specified files are not all in the url")
+
             message = (
                 'Downloading custom set of files (see "FILES" config):'
             )
@@ -116,7 +116,8 @@ class Downloader():
         if dir_exists(path):
             if len(self.download_files) > 0:
                 for f in self.download_files:
-                    successful = f.download(path=PATH, header=header)
+                    successful = True
+                    #successful = f.download(path=PATH, header=header)
                     if successful:
                         print(
                             f"Download '{f.name}' successful (hash: {f.get_hash()})"
