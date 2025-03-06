@@ -9,6 +9,7 @@ from typing import Tuple
 import requests
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 
 
 class DatasetFile:
@@ -27,16 +28,21 @@ class DatasetFile:
 
         self.__description = json['description']
         self.__sub_dir = json['directoryLabel'] if 'directoryLabel' in json else "" 
-
         data_file = json['dataFile']
         self.__id = data_file["id"]
         self.__persistentId = data_file["persistentId"]
         self.__filesize = data_file["filesize"]
         self.name = data_file["filename"]
         self.__hash = data_file["checksum"]["value"]
-        self.server_url = server_url
-        self._url = f"{self.server_url}/api/access/datafile/{self.__id}"
-        
+        self.parsed_server_url = urlparse(server_url)
+
+        self._url = self.parsed_server_url._replace(path=f'api/access/datafile/{self.__id}/', query=str('format=original')).geturl()
+
+        # Check for original file 
+        if 'originalFileName' in data_file:
+            self._url = urlparse(self._url)._replace(query='format=original').geturl()
+            self.name = data_file['originalFileName']
+
         self.__file_path = None # Will be set if downloaded successfully
 
         if not validators.url(self._url):
@@ -128,10 +134,10 @@ class DatasetFile:
         :return: True if the hashes are the same, False otherwise.
         :rtype: bool
         """
+        
         hash = self.__hash
         with open(file_path, "rb") as f:
             md5_hash = hashlib.md5(f.read()).hexdigest()
-
         return md5_hash == hash
 
     def remove_file(self):
@@ -146,8 +152,10 @@ class DatasetFile:
                 print(f"Error while trying to delete {self.__file_path}")
             else:
                 print(f"File '{self.__file_path}' successfully deleted.")
+                return True
         else:
             warnings.warn(f"Attempt to delete '{self.name}' failed. File not found in {self.__file_path}.")
+            return False
 
     def extract_file(self):
         """Extracts the file, if it ends with .zip"""
@@ -155,3 +163,6 @@ class DatasetFile:
             print(self.__file_path, self.__file_path.suffix, self.__file_path.parent)
             with zipfile.ZipFile(self.__file_path, 'r') as zip_ref:
                 zip_ref.extractall(self.__file_path.parent)
+            return True
+        else:
+            return False 
