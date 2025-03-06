@@ -95,7 +95,6 @@ class DatasetFile:
 
             response = requests.get(self._url, headers=header, stream=True)
             response.raise_for_status()
-            print(response)
 
             with tqdm(
                 total=self.__filesize, unit="B", unit_scale=True, dynamic_ncols=True
