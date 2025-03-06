@@ -94,6 +94,8 @@ class DatasetFile:
             print(f"Downloading {file_path}...")
 
             response = requests.get(self._url, headers=header, stream=True)
+            response.raise_for_status()
+            print(response)
 
             with tqdm(
                 total=self.__filesize, unit="B", unit_scale=True, dynamic_ncols=True
@@ -110,6 +112,10 @@ class DatasetFile:
 
         except FileExistsError as fe:
             print(f"The subdirectory '{dir}' could not be created, but is expected from {self.name}.")
+        except requests.exceptions.HTTPError as he:
+            print(f"Error wile trying to download '{self.name}' from '{self._url}'.\n{he}")
+        except Exception as e:
+            print(f"Uncatched error.\n{e}")
 
         return successful
 
