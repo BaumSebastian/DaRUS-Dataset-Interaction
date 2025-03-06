@@ -88,10 +88,15 @@ class Downloader():
         """
         raise NotImplementedError()
 
-    def start_download(self, path:str):
+    def start_download(self, path:str, post_process=True, remove_after_pp=True):
         """
         Starts the download
         """
+
+        if not post_process and remove_after_pp:
+            remove_after_pp = False
+            warnings.warn("Disabled removing files after post processing, as no post processing is desired.")
+
         path = Path(path)
         if dir_exists(path):
             if len(self.download_files) > 0:
@@ -117,17 +122,20 @@ class Downloader():
                     sep="\n",
                 )
                 for f in self.download_files:
-                    successful = True
-                    #successful = f.download(path=PATH, header=header)
+                    successful = f.download(path, header=self.header)
                     if successful:
                         print(
                             f"Download '{f.name}' successful (hash: {f.get_hash()})"
                         )
+                        if post_process:
+                            print("extracting file")
+                            f.extract_file()
                     else:
-                        print(f"Error while trying to download {f.name}")
+                        print(f"Downloading {f.name} not successful.")
             else:
                 print(f"No files to download.")
-
+        else:
+            print("Download aborted.")
 #           except requests.exceptions.HTTPError as err:
 #               print("Error while trying to download.")
 #               print(err)
