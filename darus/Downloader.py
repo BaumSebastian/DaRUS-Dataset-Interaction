@@ -5,7 +5,7 @@ import validators
 import warnings
 
 # Custom import
-from DatasetFile import DatasetFile
+from .DatasetFile import DatasetFile
 
 class Downloader():
     def __init__(self, url:str, header:dict={}, specific_files:list=[]):
@@ -129,5 +129,4 @@ class Downloader():
 #           except requests.exceptions.HTTPError as err:
 #               print("Error while trying to download.")
 #               print(err)
-
 
