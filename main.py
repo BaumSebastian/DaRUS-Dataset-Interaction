@@ -14,15 +14,10 @@ def main():
     with open(CONFIG_FILE) as cf_file:
         config = yaml.safe_load(cf_file.read())
 
+    # Load Config 
     PATH = config["PATH"]
     FILES = config["FILES"]
-    SERVER_URL = config["SERVER_URL"]
-    PERSISTENT_IDENTIFIER = config["PERSISTENT_IDENTIFIER"]
-    URL = (
-        f"{SERVER_URL}/api/datasets/:persistentId/?persistentId={PERSISTENT_IDENTIFIER}"
-    )
-
-    # Add API token if needed for authentification.
+    URL = config['URL']
     API_TOKEN = config['API_TOKEN']
     HEADER = {"X-Dataverse-key": API_TOKEN} if API_TOKEN else None
 
