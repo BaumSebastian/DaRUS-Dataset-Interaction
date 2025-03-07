@@ -5,7 +5,6 @@ A Python package for easily downloading datasets from the DaRUS (DataRepository 
 ## Table of Contents
 - [Overview](#overview)
 - [Installation](#installation)
-- [Configuration](#configuration)
 - [Usage](#usage)
   - [Basic Usage](#basic-usage)
   - [Download Specific Files](#download-specific-files)
@@ -27,7 +26,8 @@ Install directly from GitHub using pip:
 pip install git+https://github.com/baumsebastian/darus.git
 ```
 
-## Configuration
+
+## Usage
 
 The package can be configured with the following parameters:
 
@@ -37,8 +37,6 @@ The package can be configured with the following parameters:
 | url | The DARUS dataset URL | Required |
 | files | List of specific files to download (if empty, all files will be downloaded) | [] |
 | api_token | Authentication token for restricted datasets | None |
-
-## Usage
 
 All examples below use this sample dataset:
 ```
