@@ -104,7 +104,7 @@ class Downloader:
         """
         raise NotImplementedError()
 
-    def start_download(self, path: str, post_process=True, remove_after_pp=True):
+    def start(self, path: str, post_process=True, remove_after_pp=True):
         """
         Starts the download
         """

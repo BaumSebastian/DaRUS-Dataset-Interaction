@@ -19,12 +19,9 @@ def main():
     PATH = config["PATH"]
     FILES = config["FILES"]
     URL = config["URL"]
-
-    # Only needed for priviledged access to hidden datasets.
     API_TOKEN = config["API_TOKEN"]
-    HEADER = {"X-Dataverse-key": API_TOKEN} if API_TOKEN else None
 
-    dl = Downloader(URL, HEADER, FILES)
+    dl = Downloader(URL, files=FILES, api_token=API_TOKEN)
     dl.start_download(PATH)
 
     print("Download finished.")
