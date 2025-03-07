@@ -16,7 +16,7 @@ A Python package for easily downloading datasets from the DaRUS (DataRepository 
 
 ## Overview
 
-This package provides a simple interface to download complete datasets or specific files from DaRUS repositories like [FEM Dataset](https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4353). It handles authentication, file filtering, and download management.
+This package provides a simple interface to download complete datasets or specific files from DaRUS repositories like [FEM Dataset](https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801). It handles authentication, file filtering, and download management.
 
 ## Installation
 
@@ -31,16 +31,16 @@ pip install git+https://github.com/baumsebastian/darus.git
 
 The package can be configured with the following parameters:
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| path | Local directory where downloaded files will be stored | Required |
-| url | The DARUS dataset URL | Required |
-| files | List of specific files to download (if empty, all files will be downloaded) | [] |
-| api_token | Authentication token for restricted datasets | None |
+| Parameter | Description |
+|-----------|-------------|
+| url | The DARUS dataset URL | 
+| path | Local directory where downloaded files will be stored |
+| files | List of specific files to download (if empty, all files will be downloaded) \[Default: empty list \[ \]\]|
+| api_token | Authentication token for restricted datasets \[Default:`None`\]|
 
 All examples below use this sample dataset:
 ```
-https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4353
+https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801
 ```
 
 ### Basic Usage
@@ -50,7 +50,7 @@ Download an entire dataset:
 ```python
 from darus import Downloader 
 
-url = "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4353"
+url = "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801"
 path = "./my_dataset"
 
 # Download the complete dataset
@@ -58,7 +58,7 @@ dl = Downloader(url)
 dl.start_download(path)
 ```
 
-**Note:** DaRUS allows that every file has a 'directory' stored as metadata ([Add a File to Dataset](https://guides.dataverse.org/en/6.5/api/native-api.html#id90)). This package creates and stores the data in the specific directory to 'path/subdir'.
+**Note:** Every file has a value _directory_ in its metadata (see [Add a File to Dataset](https://guides.dataverse.org/en/6.5/api/native-api.html#id90)). `Downloader` creates and stores the downloaded file in the specific _directory_ according to `path/directory`.
 
 ### Download Specific Files
 
@@ -67,7 +67,7 @@ Download only selected files from a dataset:
 ```python
 from darus import Downloader 
 
-url = "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4353"
+url = "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801"
 path = "./my_dataset"
 
 # Download only 'metadata.tab' 
@@ -86,7 +86,7 @@ For datasets that require authentication:
 ```python
 from darus import Downloader 
 
-url = "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4353"
+url = "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801"
 path = "./my_dataset"
 
 # API token for accessing private datasets
