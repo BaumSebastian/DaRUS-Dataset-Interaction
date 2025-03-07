@@ -1,4 +1,4 @@
-# DaRUS Dataset Dataset
+# DaRUS Dataset Interaction
 
 A Python package for easily downloading datasets from the DaRUS (DataRepository of the University of Stuttgart) platform.
 
