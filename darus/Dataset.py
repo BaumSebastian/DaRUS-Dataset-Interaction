@@ -122,11 +122,14 @@ class Dataset:
                     ]
 
                     if len(self.download_files) != len(self.files):
-                        warnings.warn(
-                            "Couln't not get all specific files. The specified files are not all in the url"
+                        m = "Couln't not find all specific files."
+                        print(
+                            f"{m}\n{len(m)*"-"}", 
+                            *[" - " + str(f) for f in self.files if f not in list(map(lambda x: x.name, self.download_files))],
+                            sep='\n'
                         )
 
-                    message = 'Downloading custom set of files (see "FILES" config):'
+                    message = 'Downloading custom set of files:'
 
                 print(f'\n{message}\n{len(message)* "-"}')
                 print(
@@ -134,7 +137,6 @@ class Dataset:
                         lambda file: " - " + str(file),
                         self.download_files,
                     ),
-                    "\n",
                     sep="\n",
                 )
                 for f in self.download_files:
