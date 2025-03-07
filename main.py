@@ -5,7 +5,7 @@ import yaml
 import json
 
 # Custom imports
-from darus import Downloader
+from darus import Dataset
 
 
 def main():
@@ -21,8 +21,8 @@ def main():
     URL = config["URL"]
     API_TOKEN = config["API_TOKEN"]
 
-    dl = Downloader(URL, files=FILES, api_token=API_TOKEN)
-    dl.start_download(PATH)
+    dl = Dataset(URL, files=FILES, api_token=API_TOKEN)
+    dl.download(PATH)
 
     print("Download finished.")
 

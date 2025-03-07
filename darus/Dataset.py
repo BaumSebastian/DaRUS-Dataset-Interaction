@@ -12,7 +12,7 @@ from .DatasetFile import DatasetFile
 from .utils import dir_exists
 
 
-class Downloader:
+class Dataset:
     def __init__(self, url: str, files: list = [], api_token=None):
         """
         Creates Instance of the Dataloader
@@ -99,7 +99,7 @@ class Downloader:
         """
         raise NotImplementedError()
 
-    def start_download(self, path: str, post_process=True, remove_after_pp=True):
+    def download(self, path: str, post_process=True, remove_after_pp=True):
         """
         Starts the download
         """
