@@ -35,7 +35,7 @@ The package can be configured with the following parameters:
 |-----------|-------------|
 | url | The DARUS dataset URL | 
 | path | Local directory where downloaded files will be stored |
-| files | List of specific files to download (if empty, all files will be downloaded) \[Default: empty list \[ \]\]|
+| files | List of specific files to download (if empty, all files will be downloaded) \[Default: `[ ]`\]|
 | api_token | Authentication token for restricted datasets \[Default:`None`\]|
 
 All examples below use this sample dataset:
