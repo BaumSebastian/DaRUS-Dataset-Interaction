@@ -6,40 +6,35 @@ import warnings
 from pathlib import Path
 from urllib.parse import urlparse
 
+
 # Custom import
 from .DatasetFile import DatasetFile
 from .utils import dir_exists
 
 
 class Downloader:
-    def __init__(self, url: str, header: dict = {}, specific_files: list = []):
+    def __init__(self, url: str, files: list = [], api_token=None):
         """
         Creates Instance of the Dataloader
 
         :param url: The url to download the dataset from
         :type url: str
-        :param header: The header for the request [Default {}]
-        :type header: dict
-        :param specific_files: A list of files, that only will be downloaded if the list is not empty [Default []]
-        :type specific_files: iterable
+        :param files: A list of files, that will be downloaded from dataset. If the list is empty, whole dataset is downloaded. [Default []]
+        :type files: list
 
         :raise ValueError: If the provided url is not a valid url.
+        :raise ValueError: If files is not an instance of iterable.
         """
 
         if not validators.url(url):
             raise ValueError(f"Provided url is not valid {url}.")
 
-        if not isinstance(specific_files, list):
-            raise ValueError(
-                f"The parameter specific_files needs to be of type iterable"
-            )
+        if not isinstance(files, list):
+            raise ValueError(f"The parameter files needs to be of type iterable")
 
-        if header and not isinstance(header, dict):
-            raise ValueError(f"The parameter header needs to be of type dict")
-
-        self.specific_files = specific_files
+        self.files = files
         self.downloading_files = []
-        self.header = header
+        self.header = {"X-Dataverse-key": api_token} if api_token else None
 
         self.url = urlparse(url)
         self.server_url = self.url._replace(
@@ -104,7 +99,7 @@ class Downloader:
         """
         raise NotImplementedError()
 
-    def start(self, path: str, post_process=True, remove_after_pp=True):
+    def start_download(self, path: str, post_process=True, remove_after_pp=True):
         """
         Starts the download
         """
@@ -121,12 +116,12 @@ class Downloader:
                 message = "Downloading:"
 
                 # Check if user wants to download only specific files
-                if self.specific_files:
+                if self.files:
                     self.download_files = [
-                        f for f in self.download_files if f.name in self.specific_files
+                        f for f in self.download_files if f.name in self.files
                     ]
 
-                    if len(self.download_files) != len(self.specific_files):
+                    if len(self.download_files) != len(self.files):
                         warnings.warn(
                             "Couln't not get all specific files. The specified files are not all in the url"
                         )
