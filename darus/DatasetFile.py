@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 
 
 class DatasetFile:
-    def __init__(self, json: dict, server_url: str):
+    def __init__(self, json: dict, server_url: str, download_original:bool = True):
         """
         Creates an instance of a dataset file.
 
@@ -21,6 +21,8 @@ class DatasetFile:
         :type json: dict
         :param server_url: The url of the server where the dataset is stored
         :type server_url: str
+        :param download_original: Indicates that if a original file exists, if it should be downloaded instead [Default: bool]
+        :type download_original: bool 
 
         :raise KeyError: If a required key is not in json. See get_required_keys for a list of the keys.
         :raise ValueError: If the server_url concatenated with the other information is not a valid url.
@@ -34,17 +36,14 @@ class DatasetFile:
         self.name = data_file["filename"]
         self.__hash = data_file["checksum"]["value"]
         self.parsed_server_url = urlparse(server_url)
+        self.has_original = "originalFileName" in data_file
+        self.download_original = download_original
+        self.original_file_name = data_file['originalFileName'] if self.has_original else ""
+        self.__file_path = None  # Will be set if downloaded successfully
 
         self._url = self.parsed_server_url._replace(
-            path=f"api/access/datafile/{self.__id}/", query=str("format=original")
+            path=f"api/access/datafile/{self.__id}/"
         ).geturl()
-
-        # Check for original file
-        if "originalFileName" in data_file:
-            self._url = urlparse(self._url)._replace(query="format=original").geturl()
-            self.name = data_file["originalFileName"]
-
-        self.__file_path = None  # Will be set if downloaded successfully
 
         if not validators.url(self._url):
             raise ValueError(f"The url {self._url} is not valid.")
@@ -91,14 +90,21 @@ class DatasetFile:
         if block_size <= 0:
             raise ValueError("block_size must be >0.")
 
+        # Check for original file
+        name = self.name
+        url = self._url
+
+        if self.has_original and self.download_original:
+            url = urlparse(self._url)._replace(query="format=original").geturl()
+            name = self.original_file_name
         successful = False
         try:
             dir = Path(path) / self.sub_dir
             dir.mkdir(parents=True, exist_ok=True)
 
-            file_path = dir / self.name
+            file_path = dir / name 
 
-            response = requests.get(self._url, headers=header, stream=True)
+            response = requests.get(url, headers=header, stream=True)
             response.raise_for_status()
 
             with tqdm(
@@ -108,8 +114,11 @@ class DatasetFile:
                     for data in response.iter_content(block_size):
                         progress_bar.update(len(data))
                         file.write(data)
-
-            successful = self.validate(file_path)
+            
+            if self.has_original and not self.download_original:
+                successful = True # Will be claculated not by hash.
+            else:
+                successful = self.validate(file_path)
 
             if successful:
                 self.__file_path = file_path

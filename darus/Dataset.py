@@ -141,7 +141,10 @@ class Dataset:
                 )
                 n_files = len(self.download_files)
                 for i, f in enumerate(self.download_files):
-                    print(f"Downloading [{i+1:0{len(str(n_files))}d}/{n_files}]: '{f.name}' into '{Path(path, f.sub_dir)}'")
+                    name = f.name
+                    if f.has_original and f.download_original:
+                        name = f.original_file_name
+                    print(f"Downloading [{i+1:0{len(str(n_files))}d}/{n_files}]: '{name}' into '{Path(path) / f.sub_dir}'")
                     successful = f.download(path, header=self.header)
                     if successful:
                         if post_process:
