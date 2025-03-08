@@ -5,7 +5,12 @@ import validators
 import warnings
 from pathlib import Path
 from urllib.parse import urlparse
-from tabulate import tabulate
+from datetime import datetime
+
+from rich.console import Console
+from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn, TimeElapsedColumn, TimeRemainingColumn, DownloadColumn, TransferSpeedColumn
+from rich.table import Table
+from rich.text import Text
 
 # Custom import
 from .DatasetFile import DatasetFile
@@ -93,16 +98,38 @@ class Dataset:
             self.download_files = []
 
     def summary(self):
-        """Gives an Overview of the dataset retrieved information
+        """Gives an Overview of the dataset retrieved information"""
+        console = Console()
 
-        :raise NotImplementedError: Not implemented
-        """
-        raise NotImplementedError()
+        # Create a table to display the information
+        table = Table(title="Dataset Summary", title_justify="left")
 
+        table.add_column("Property")
+        table.add_column("Value")
+
+        # Add rows with rich formatting
+        table.add_row("URL", str(self.url.geturl()))
+        table.add_row("Persistent ID", str(self.persistent_id))
+        table.add_row("Last Update", self.format_datetime(self.last_update_time))
+        table.add_row("License", self.license_name)
+
+        # Display the table
+        console.print(table)
+
+    def format_datetime(self, timestamp):
+        """Formats the datetime for display"""
+        return str(datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ"))
 
     def download(self, path: str, post_process=True, remove_after_pp=True):
         """
         Starts the download
+
+        :param path: The path where the files are downloaded.
+        :type path: str
+        :param post_process: Indicates if the files should be post processed [Default: True].
+        :type post_process: bool
+        :param remove_after_pp: Indicates if the files should be deleted after being post processed [Default: True].
+        :type remove_after_pp: bool
         """
 
         if not post_process and remove_after_pp:
@@ -121,22 +148,72 @@ class Dataset:
                         f for f in self.download_files if f.name in self.files
                     ]
 
-                print("Downloading:\n------------")
-                print(tabulate([[f.name, f.get_filesize(), path / f.sub_dir, f._description] for f in self.download_files], headers=['Name', 'Size', 'Directory', 'Description'],tablefmt='orgtbl' ))
-                n_files = len(self.download_files)
-                for i, f in enumerate(self.download_files):
-                    name = f.name
-                    if f.has_original and f.download_original:
-                        name = f.original_file_name
-                    print(f"Downloading [{i+1:0{len(str(n_files))}d}/{n_files}]: '{name}' into '{Path(path) / f.sub_dir}'")
-                    successful = f.download(path, header=self.header)
-                    if successful:
-                        if post_process:
-                            extract_succ = f.extract_file()
-                            if remove_after_pp and extract_succ:
-                                del_succ = f.remove_file()
-                    else:
-                        print(f"Downloading {f.name} not successful.")
+                console = Console() 
+                table = Table(title="Downloading...", title_justify="left")
+
+                table.add_column("Name", justify="left")
+                table.add_column("Size", justify="left")
+                table.add_column("Directory", justify="left")
+                table.add_column("Download Original", justify="left")
+                table.add_column("Description", justify="left")
+
+                for file in self.download_files:
+                    table.add_row(file.name, file.get_filesize(), str(path / file.sub_dir), f"[green]✓({file.original_file_name})[/green]" if file.original_file_name else "", file.description)
+
+                console.print(table)
+
+                    # Create a single progress display with ETA and file size
+                with Progress(
+                    TextColumn("[bold]{task.description}"),
+                    BarColumn(),
+                    "[progress.percentage]{task.percentage:>3.1f}%",
+                    "•",
+                    DownloadColumn(),
+                    "•",
+                    TimeElapsedColumn(),
+                    "•",
+                    TimeRemainingColumn(),
+                    "•",
+                    TransferSpeedColumn(),
+                    console=console
+                ) as progress:
+
+                    for i, f in enumerate(self.download_files):
+                        if f.has_original and f.download_original:
+                            f.name = f.original_file_name
+                        name = f.name
+
+                        # Downloading
+                        task_id = progress.add_task(f"[blue]Downloading {f.name}[/blue]", total=f.get_filesize(False))
+                        for current_size in f.download(path, header=self.header):
+                            progress.update(task_id, completed=int(current_size))
+                        download_correct = f.validate()
+
+                        if f.do_extract and post_process:
+                            # Post processing
+                            progress.update(task_id, description=f"[yellow]Processing {f.name}[/yellow]")
+                            process_result = f.process()
+                            
+                            # Removing only if processing succeeded
+                            remove_result = False
+                            if process_result and remove_after_pp:
+                                progress.update(task_id, description=f"[red]Removing {f.name}[/red]")
+                                remove_result = f.remove()
+                            
+                            # Final status in the same line
+                            if process_result and remove_result:
+                                status = f"[green]✓ {f.name} (processed & removed)[/green]"
+                            elif process_result:
+                                status = f"[yellow]⚠ {f.name} (processed, removal failed)[/yellow]"
+                            elif remove_result:
+                                status = f"[yellow]⚠ {f.name} (processed failed, removed)[/yellow]"
+                            else:
+                                status = f"[red]✗ {f.name} (processed & removal failed)[/red]"
+                            
+                            progress.update(task_id, description=status, completed=f.get_filesize(False))
+                        else:
+                            status = f"[green]✓ {f.name}[/green]" if download_correct else f"[red]✗ {f.name}[/red]"
+                            progress.update(task_id, description=status, complected=f.get_filesize(False))
             else:
                 print(f"No files to download.")
         else:

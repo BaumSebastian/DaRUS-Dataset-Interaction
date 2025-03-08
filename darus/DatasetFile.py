@@ -1,17 +1,11 @@
-from typing import Tuple
-import warnings
 import zipfile
 import validators
 import hashlib
 import humanize
-from tqdm.auto import tqdm
-from typing import Tuple
 import requests
 import os
 from pathlib import Path
 from urllib.parse import urlparse
-from rich.console import Console
-from rich.progress import Progress
 
 class DatasetFile:
     def __init__(self, json: dict, server_url: str, download_original:bool = True):
@@ -28,7 +22,7 @@ class DatasetFile:
         :raise KeyError: If a required key is not in json. See get_required_keys for a list of the keys.
         :raise ValueError: If the server_url concatenated with the other information is not a valid url.
         """
-        self._description = json["description"] if "description" in json else ""
+        self.description = json["description"] if "description" in json else ""
         self.sub_dir = json["directoryLabel"] if "directoryLabel" in json else ""
         data_file = json["dataFile"]
         self.__id = data_file["id"]
@@ -36,12 +30,14 @@ class DatasetFile:
         self.__filesize = data_file["filesize"]
         self.name = data_file["filename"]
         self.__hash = data_file["checksum"]["value"]
-        self.parsed_server_url = urlparse(server_url)
         self.has_original = "originalFileName" in data_file
         self.download_original = download_original
         self.original_file_name = data_file['originalFileName'] if self.has_original else ""
-        self.__file_path = None  # Will be set if downloaded successfully
+        self.friendly_type = data_file['friendlyType'] if 'friendlyType' in data_file else ""
+        self.do_extract = self.friendly_type == 'ZIP Archive'
+        self.file_path = None  # Will be set if downloaded successfully
 
+        self.parsed_server_url = urlparse(server_url)
         self._url = self.parsed_server_url._replace(
             path=f"api/access/datafile/{self.__id}/"
         ).geturl()
@@ -51,15 +47,7 @@ class DatasetFile:
 
     def __str__(self) -> str:
         """Overrides implementation of string"""
-        return f"{self.name} [{self.get_filesize()}]: {self.__description}"
-
-    def get_required_keys(self) -> Tuple[str]:
-        """Returns the required keys in the json object passed to the constructor"""
-        return ("id", "persistentId", "filesize", "filename")
-
-    def get_hash(self) -> str:
-        """Returns the md5 hash value of the file"""
-        return self.__hash
+        return f"{self.name} [{self.get_filesize()}] - {self.description}"
 
     def get_filesize(self, pretty: bool = True) -> str:
         """
@@ -72,7 +60,7 @@ class DatasetFile:
         """
         return humanize.naturalsize(self.__filesize) if pretty else self.__filesize
 
-    def download(self, path="", header=None, block_size=1024) -> bool:
+    def download(self, path="", header=None, block_size=8192) -> int:
         """
         Downloads the file based on self._url and saves it to path/self.filename
         Credits: https://stackoverflow.com/questions/37573483/progress-bar-while-download-file-over-http-with-requests
@@ -83,8 +71,7 @@ class DatasetFile:
         :type header: dict
         :param block_size: The size to iterate over the response [Default: 1024]
         :type block_size: int
-        :return: True if downloaded file is valid.
-        :rtype: bool
+        :yields: The downloaded bytes so far.
 
         :raise ValueError: If block_size is <= 0
         """
@@ -95,35 +82,25 @@ class DatasetFile:
         name = self.name
         url = self._url
 
-        if self.has_original and self.download_original:
+        if self.download_original:
             url = urlparse(self._url)._replace(query="format=original").geturl()
-            name = self.original_file_name
-        successful = False
+            name = self.original_file_name if self.original_file_name else self.name
+
         try:
             dir = Path(path) / self.sub_dir
             dir.mkdir(parents=True, exist_ok=True)
 
             file_path = dir / name 
+            self.file_path = file_path
 
-            response = requests.get(url, headers=header, stream=True)
-            response.raise_for_status()
-
-            with tqdm(
-                total=self.__filesize, unit="B", unit_scale=True, dynamic_ncols=True
-            ) as progress_bar:
-                with open(file_path, "wb") as file:
-                    for data in response.iter_content(block_size):
-                        progress_bar.update(len(data))
-                        file.write(data)
-            
-            if self.has_original and not self.download_original:
-                successful = True # Will be claculated not by hash.
-            else:
-                successful = self.validate(file_path)
-
-            if successful:
-                self.__file_path = file_path
-
+            downloaded = 0
+            with requests.get(url, headers=header, stream=True) as r:
+                r.raise_for_status()
+                with open(file_path, 'wb') as f:
+                    for chunk in r.iter_content(chunk_size=block_size): 
+                        downloaded += len(chunk)
+                        yield(downloaded)
+                        f.write(chunk)
         except FileExistsError as fe:
             print(
                 f"The subdirectory '{dir}' could not be created, but is expected from {self.name}."
@@ -132,57 +109,54 @@ class DatasetFile:
             print(
                 f"Error wile trying to download '{self.name}' from '{self._url}'.\n{he}"
             )
+        except MemoryError as me:
+            print(f"MemoryError encountered while downloading '{self.name}'.\n{me}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
 
-        return successful
-
-    def validate(self, file_path) -> bool:
+    def validate(self) -> bool:
         """
         Validates a file against an MD5 hash value
         Credits: https://gist.github.com/mjohnsullivan/9322154
 
         :param file_path: path to the file for hash validation
         :type file_path: string
-        :return: True if the hashes are the same, False otherwise.
+        :return: True if the hashes are the same, False otherwise or the file not exists.
         :rtype: bool
         """
 
-        hash = self.__hash
-        with open(file_path, "rb") as f:
-            md5_hash = hashlib.md5(f.read()).hexdigest()
-        return md5_hash == hash
+        if not self.file_path or not self.__hash:
+            return False
 
-    def remove_file(self):
+        with open(self.file_path, "rb") as f:
+            md5_hash = hashlib.md5(f.read()).hexdigest()
+        return md5_hash == self.__hash
+
+    def remove(self):
         """
         Removes the downloaded file.
         """
-
-        if self.__file_path and os.path.isfile(self.__file_path):
+        removed_successfully = False
+        if self.file_path and os.path.isfile(self.file_path):
             try:
-                os.remove(self.__file_path)
+                os.remove(self.file_path)
             except OsError as e:
-                print(f"Error while trying to delete {self.__file_path}")
+                print(f"Error while trying to delete {self.file_path}")
             else:
-                return True
-        else:
-            warnings.warn(
-                f"Attempt to delete '{self.name}' failed. File not found in {self.__file_path}."
-            )
-            return False
+                removed_successfully = True
+        return removed_successfully
 
-    def extract_file(self):
-        """Extracts the file, if it ends with .zip"""
-        if (
-            self.__file_path
-            and os.path.isfile(self.__file_path)
-            and self.__file_path.suffix == ".zip"
-        ):
-            try:
-                with zipfile.ZipFile(self.__file_path, "r") as zip_ref:
-                    zip_ref.extractall(self.__file_path.parent)
-            except Exception as e:
-                print(f"Error while trying to extrac {self.name}.\n{e}")
-                return False
-            else:
-                return True
-        else:
-            return False
+    def process(self):
+        """post process the file."""
+        processed_successfully = True
+
+        if ( self.file_path and os.path.isfile(self.file_path)):
+            # process zip files 
+            if self.file_path.suffix == ".zip":
+                try:
+                    with zipfile.ZipFile(self.file_path, "r") as zip_ref:
+                        zip_ref.extractall(self.file_path.parent)
+                except Exception as e:
+                    print(f"Error while trying to extract {self.file_path}.\n{e}")
+                    processed_successfully = False
+        return processed_successfully 

@@ -22,10 +22,8 @@ def main():
     API_TOKEN = config["API_TOKEN"]
 
     dl = Dataset(URL, files=FILES, api_token=API_TOKEN)
+    dl.summary()
     dl.download(PATH)
-
-    print("Download finished.")
-
 
 if __name__ == "__main__":
     main()

@@ -9,5 +9,5 @@ setup(
     license="GNU",
     packages=["darus"],
     zip_safe=False,
-    install_requires=["requests", "validators", "humanize", "tqdm", "pyyaml"],
+    install_requires=["requests", "validators", "humanize", "rich", "pyyaml"],
 )
