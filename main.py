@@ -10,7 +10,7 @@ from darus import Dataset
 
 def main():
 
-    CONFIG_FILE = "config.yaml"
+    CONFIG_FILE = "config.example.yaml"
 
     with open(CONFIG_FILE) as cf_file:
         config = yaml.safe_load(cf_file.read())
