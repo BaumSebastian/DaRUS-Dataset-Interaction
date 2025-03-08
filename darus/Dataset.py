@@ -124,7 +124,7 @@ class Dataset:
                     if len(self.download_files) != len(self.files):
                         m = "Couln't not find all specific files."
                         print(
-                            f"{m}\n{len(m)*"-"}", 
+                            f"{m}\n{len(m)*'-'}", 
                             *[" - " + str(f) for f in self.files if f not in list(map(lambda x: x.name, self.download_files))],
                             sep='\n'
                         )
