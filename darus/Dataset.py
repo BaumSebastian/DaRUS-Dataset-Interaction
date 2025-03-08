@@ -122,9 +122,8 @@ class Dataset:
                     ]
 
                 print("Downloading:\n------------")
-                print(tabulate([[f.name, f.get_filesize(), f.sub_dir, f._description] for f in self.download_files], headers=['Name', 'Size', 'Directory', 'Description'],tablefmt='orgtbl' ))
+                print(tabulate([[f.name, f.get_filesize(), path / f.sub_dir, f._description] for f in self.download_files], headers=['Name', 'Size', 'Directory', 'Description'],tablefmt='orgtbl' ))
                 n_files = len(self.download_files)
-                return
                 for i, f in enumerate(self.download_files):
                     name = f.name
                     if f.has_original and f.download_original:
