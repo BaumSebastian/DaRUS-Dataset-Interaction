@@ -1,4 +1,4 @@
-PATH: "~/your/path/to/data"  # Needs to be adjusted
+PATH: "./my_dataset"  # Needs to be adjusted
 FILES: []  # Empty list to download all files (insert filename for specific download).
 API_TOKEN: ""  # Leave empty if authorization not needed.
 URL: "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801"
