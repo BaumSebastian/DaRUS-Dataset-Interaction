@@ -10,7 +10,8 @@ import requests
 import os
 from pathlib import Path
 from urllib.parse import urlparse
-
+from rich.console import Console
+from rich.progress import Progress
 
 class DatasetFile:
     def __init__(self, json: dict, server_url: str, download_original:bool = True):
@@ -27,7 +28,7 @@ class DatasetFile:
         :raise KeyError: If a required key is not in json. See get_required_keys for a list of the keys.
         :raise ValueError: If the server_url concatenated with the other information is not a valid url.
         """
-        self.__description = json["description"] if "description" in json else ""
+        self._description = json["description"] if "description" in json else ""
         self.sub_dir = json["directoryLabel"] if "directoryLabel" in json else ""
         data_file = json["dataFile"]
         self.__id = data_file["id"]
@@ -131,8 +132,6 @@ class DatasetFile:
             print(
                 f"Error wile trying to download '{self.name}' from '{self._url}'.\n{he}"
             )
-        except Exception as e:
-            print(f"Uncatched error.\n{e}")
 
         return successful
 

@@ -5,7 +5,7 @@ import validators
 import warnings
 from pathlib import Path
 from urllib.parse import urlparse
-
+from tabulate import tabulate
 
 # Custom import
 from .DatasetFile import DatasetFile
@@ -25,7 +25,7 @@ class Dataset:
         :raise ValueError: If the provided url is not a valid url.
         :raise ValueError: If files is not an instance of iterable.
         """
-
+        
         if not validators.url(url):
             raise ValueError(f"Provided url is not valid {url}.")
 
@@ -99,6 +99,7 @@ class Dataset:
         """
         raise NotImplementedError()
 
+
     def download(self, path: str, post_process=True, remove_after_pp=True):
         """
         Starts the download
@@ -113,7 +114,6 @@ class Dataset:
         path = Path(path)
         if dir_exists(path):
             if len(self.download_files) > 0:
-                message = "Downloading:"
 
                 # Check if user wants to download only specific files
                 if self.files:
@@ -121,25 +121,10 @@ class Dataset:
                         f for f in self.download_files if f.name in self.files
                     ]
 
-                    if len(self.download_files) != len(self.files):
-                        m = "Couln't not find all specific files."
-                        print(
-                            f"{m}\n{len(m)*'-'}", 
-                            *[" - " + str(f) for f in self.files if f not in list(map(lambda x: x.name, self.download_files))],
-                            sep='\n'
-                        )
-
-                    message = 'Downloading custom set of files:'
-
-                print(f'\n{message}\n{len(message)* "-"}')
-                print(
-                    *map(
-                        lambda file: " - " + str(file),
-                        self.download_files,
-                    ),"",
-                    sep="\n",
-                )
+                print("Downloading:\n------------")
+                print(tabulate([[f.name, f.get_filesize(), f.sub_dir, f._description] for f in self.download_files], headers=['Name', 'Size', 'Directory', 'Description'],tablefmt='orgtbl' ))
                 n_files = len(self.download_files)
+                return
                 for i, f in enumerate(self.download_files):
                     name = f.name
                     if f.has_original and f.download_original:
