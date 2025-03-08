@@ -119,7 +119,7 @@ class Dataset:
 
     def format_datetime(self, timestamp):
         """Formats the datetime for display"""
-        return str(datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ"))
+        return str(datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")) if timestamp else ""
 
     def download(self, path: str, post_process=True, remove_after_pp=True):
         """
