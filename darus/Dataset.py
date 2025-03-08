@@ -188,11 +188,12 @@ class Dataset:
                         task_id = progress.add_task(f"[blue]Downloading {f.name}[/blue]", total=f.get_filesize(False))
                         for current_size in f.download(path, header=self.header):
                             progress.update(task_id, completed=int(current_size))
+
+                        progress.update(task_id, description=f"[yellow]Processing {f.name}[/yellow]")
                         download_correct = f.validate()
                         if download_correct:
                             if f.do_extract and post_process:
                                 # Post processing
-                                progress.update(task_id, description=f"[yellow]Processing {f.name}[/yellow]")
                                 process_result = f.process()
                                 
                                 # Removing only if processing succeeded
@@ -217,6 +218,7 @@ class Dataset:
                                 progress.update(task_id, description=status, complected=f.get_filesize(False))
                         else:
                             status = f"[red]✗ {f.name} (wrong hash value)[/red]"
+                            progress.update(task_id, description=status, complected=f.get_filesize(False))
             else:
                 print(f"No files to download.")
         else:
