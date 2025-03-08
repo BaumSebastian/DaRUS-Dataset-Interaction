@@ -26,7 +26,7 @@ class DatasetFile:
         :raise ValueError: If the server_url concatenated with the other information is not a valid url.
         """
         self.__description = json["description"] if "description" in json else ""
-        self.__sub_dir = json["directoryLabel"] if "directoryLabel" in json else ""
+        self.sub_dir = json["directoryLabel"] if "directoryLabel" in json else ""
         data_file = json["dataFile"]
         self.__id = data_file["id"]
         self.__persistentId = data_file["persistentId"]
@@ -93,12 +93,10 @@ class DatasetFile:
 
         successful = False
         try:
-            dir = Path(path) / self.__sub_dir
+            dir = Path(path) / self.sub_dir
             dir.mkdir(parents=True, exist_ok=True)
 
             file_path = dir / self.name
-
-            print(f"Downloading {file_path}...")
 
             response = requests.get(self._url, headers=header, stream=True)
             response.raise_for_status()

@@ -136,10 +136,12 @@ class Dataset:
                     *map(
                         lambda file: " - " + str(file),
                         self.download_files,
-                    ),
+                    ),"",
                     sep="\n",
                 )
-                for f in self.download_files:
+                n_files = len(self.download_files)
+                for i, f in enumerate(self.download_files):
+                    print(f"Downloading [{i+1:0{len(str(n_files))}d}/{n_files}]: '{f.name}' into '{Path(path, f.sub_dir)}'")
                     successful = f.download(path, header=self.header)
                     if successful:
                         if post_process:
