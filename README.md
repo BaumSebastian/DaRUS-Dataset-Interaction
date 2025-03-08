@@ -9,6 +9,7 @@ A Python package for easily downloading datasets from the ![DaRUS](https://darus
   - [Basic Usage](#basic-usage)
   - [Download Specific Files](#download-specific-files)
   - [Private Datasets](#private-datasets)
+  - [Post Processing](#post-processingdeletion)
   - [Sample Output](#sample-output)
 - [License](#license)
 - [Contributing](#contributing)
@@ -98,11 +99,11 @@ token = 'xxxx-xxxx-xxxx-xxxx'
 ds = Dataset(url, api_token=token)
 ds.download(path)
 ```
-### Post Processing and File Deletion
+### Post Processing 
 
-The method `download` accepts two additional parameters.
-- `post_process` : zip archieves are automatically deleted, after download completed. Default: True.
-- `remove_after_pp`: The zip files are deleted are extration.
+The method `download` of `Dataset` accepts two additional arguments.
+- `post_process` : Zip archieves are automatically extracted, after download completed. Default: `True`.
+- `remove_after_pp`: The Zip archieves are deleted after extration. Default: `True`.
 
 ### Sample Output
 

@@ -60,7 +60,7 @@ class DatasetFile:
         """
         return humanize.naturalsize(self.__filesize) if pretty else self.__filesize
 
-    def download(self, path="", header=None, block_size=8192) -> int:
+    def download(self, path="", header=None, chunk_size=8192) -> int:
         """
         Downloads the file based on self._url and saves it to path/self.filename
         Credits: https://stackoverflow.com/questions/37573483/progress-bar-while-download-file-over-http-with-requests
@@ -69,15 +69,10 @@ class DatasetFile:
         :type path: str
         :param header: The header if needed for the web requests [Default: None]
         :type header: dict
-        :param block_size: The size to iterate over the response [Default: 1024]
-        :type block_size: int
+        :param chunk_size: The size to iterate over the response [Default: 1024]
+        :type chunk_size: int
         :yields: The downloaded bytes so far.
-
-        :raise ValueError: If block_size is <= 0
         """
-        if block_size <= 0:
-            raise ValueError("block_size must be >0.")
-
         # Check for original file
         name = self.name
         url = self._url
@@ -97,7 +92,7 @@ class DatasetFile:
             with requests.get(url, headers=header, stream=True) as r:
                 r.raise_for_status()
                 with open(file_path, 'wb') as f:
-                    for chunk in r.iter_content(chunk_size=block_size): 
+                    for chunk in r.iter_content(chunk_size=chunk_size): 
                         downloaded += len(chunk)
                         yield(downloaded)
                         f.write(chunk)
@@ -114,7 +109,7 @@ class DatasetFile:
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
 
-    def validate(self) -> bool:
+    def validate(self, chunk_size=8192) -> bool:
         """
         Validates a file against an MD5 hash value
         Credits: https://gist.github.com/mjohnsullivan/9322154
@@ -128,9 +123,15 @@ class DatasetFile:
         if not self.file_path or not self.__hash:
             return False
 
+        m = hashlib.md5()
         with open(self.file_path, "rb") as f:
-            md5_hash = hashlib.md5(f.read()).hexdigest()
-        return md5_hash == self.__hash
+            while True:
+                chunk = f.read(chunk_size)
+                if not chunk:
+                    break
+                m.update(chunk)
+
+        return m.hexdigest() == self.__hash
 
     def remove(self):
         """

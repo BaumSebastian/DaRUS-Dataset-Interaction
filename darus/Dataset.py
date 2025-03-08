@@ -8,7 +8,8 @@ from urllib.parse import urlparse
 from datetime import datetime
 
 from rich.console import Console
-from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn, TimeElapsedColumn, TimeRemainingColumn, DownloadColumn, TransferSpeedColumn
+from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn, TimeElapsedColumn, TimeRemainingColumn, DownloadColumn, TransferSpeedColumn, SpinnerColumn
+from rich.spinner import Spinner
 from rich.table import Table
 from rich.text import Text
 
@@ -188,32 +189,34 @@ class Dataset:
                         for current_size in f.download(path, header=self.header):
                             progress.update(task_id, completed=int(current_size))
                         download_correct = f.validate()
-
-                        if f.do_extract and post_process:
-                            # Post processing
-                            progress.update(task_id, description=f"[yellow]Processing {f.name}[/yellow]")
-                            process_result = f.process()
-                            
-                            # Removing only if processing succeeded
-                            remove_result = False
-                            if process_result and remove_after_pp:
-                                progress.update(task_id, description=f"[red]Removing {f.name}[/red]")
-                                remove_result = f.remove()
-                            
-                            # Final status in the same line
-                            if process_result and remove_result:
-                                status = f"[green]✓ {f.name} (processed & removed)[/green]"
-                            elif process_result:
-                                status = f"[yellow]⚠ {f.name} (processed, removal failed)[/yellow]"
-                            elif remove_result:
-                                status = f"[yellow]⚠ {f.name} (processed failed, removed)[/yellow]"
+                        if download_correct:
+                            if f.do_extract and post_process:
+                                # Post processing
+                                progress.update(task_id, description=f"[yellow]Processing {f.name}[/yellow]")
+                                process_result = f.process()
+                                
+                                # Removing only if processing succeeded
+                                remove_result = False
+                                if process_result and remove_after_pp:
+                                    progress.update(task_id, description=f"[red]Removing {f.name}[/red]")
+                                    remove_result = f.remove()
+                                
+                                # Final status in the same line
+                                if process_result and remove_result:
+                                    status = f"[green]✓ {f.name} (processed & removed)[/green]"
+                                elif process_result:
+                                    status = f"[yellow]⚠ {f.name} (processed, removal failed)[/yellow]"
+                                elif remove_result:
+                                    status = f"[yellow]⚠ {f.name} (processed failed, removed)[/yellow]"
+                                else:
+                                    status = f"[red]✗ {f.name} (processed & removal failed)[/red]"
+                                
+                                progress.update(task_id, description=status, completed=f.get_filesize(False))
                             else:
-                                status = f"[red]✗ {f.name} (processed & removal failed)[/red]"
-                            
-                            progress.update(task_id, description=status, completed=f.get_filesize(False))
+                                status = f"[green]✓ {f.name}[/green]"
+                                progress.update(task_id, description=status, complected=f.get_filesize(False))
                         else:
-                            status = f"[green]✓ {f.name}[/green]" if download_correct else f"[red]✗ {f.name}[/red]"
-                            progress.update(task_id, description=status, complected=f.get_filesize(False))
+                            status = f"[red]✗ {f.name} (wrong hash value)[/red]"
             else:
                 print(f"No files to download.")
         else:
