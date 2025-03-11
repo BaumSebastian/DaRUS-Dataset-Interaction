@@ -4,7 +4,7 @@ setup(
     name="darus",
     version="0.0.1",
     description="Basic interaction with DaRUS",
-    url="https://github.com/BaumSebastian/DaRUS",
+    url="https://github.com/BaumSebastian/DaRUS-Dataset-Interaction",
     author="Sebastian Baum",
     license="GNU",
     packages=["darus"],
