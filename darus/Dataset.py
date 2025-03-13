@@ -35,9 +35,6 @@ class Dataset:
         if not validators.url(url):
             raise ValueError(f"Provided url is not valid {url}.")
 
-        if not isinstance(files, list):
-            raise ValueError(f"The parameter files needs to be of type iterable")
-
         self.downloading_files = []
         self.header = {"X-Dataverse-key": api_token} if api_token else None
 
@@ -81,19 +78,19 @@ class Dataset:
             )
         except KeyError as ke:
             print(
-                f"Couldn't find following key in web response:{ke}\nThe Dataloader will abort in order to avoid unwanted behaviour."
+                f"Couldn't find following key in web response:{ke}"
             )
             self.download_files = []
         except (
             requests.HTTPError
-        ) as exception:  # Captures response.raise_for_status() - 4xx or 5xx status code. If you remove this, then code will use generic handle
+        ) as exception: 
             print(
-                f"An error occured while trying to access dataset.\n{str(exception)}\nThe Dataloader will abort in order to avoid unwanted behaivour."
+                f"An error occured while trying to access dataset.\n{str(exception)}"
             )
             self.download_files = []
         except (
             Exception
-        ) as exception:  # Generic error handler for raise Exception('Error in response json') and "Max retries exceeded."
+        ) as exception:  
             print(exception)
             self.download_files = []
 
@@ -140,6 +137,7 @@ class Dataset:
                 "Disabled removing files after post processing, as no post processing is desired."
             )
 
+
         path = Path(path)
         if dir_exists(path):
             if len(self.download_files) > 0:
@@ -149,6 +147,7 @@ class Dataset:
                     self.download_files = [
                         f for f in self.download_files if f.name in files
                     ]
+
 
                 console = Console() 
                 table = Table(title="Downloading...", title_justify="left")
