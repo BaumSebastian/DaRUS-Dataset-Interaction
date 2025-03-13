@@ -77,8 +77,8 @@ path = "./my_dataset"
 # Download only 'metadata.tab' 
 files = ["metadata.tab"]
 
-ds = Dataset(url, files=files)
-ds.download(path)
+ds = Dataset(url)
+ds.download(path, files=files)
 ```
 
 **Note:** DaRUS converts tabular data like .csv files into .tab format. This package downloads the original file format (e.g., .csv) when available.

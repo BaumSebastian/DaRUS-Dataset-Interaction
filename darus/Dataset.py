@@ -19,14 +19,14 @@ from .utils import dir_exists
 
 
 class Dataset:
-    def __init__(self, url: str, files: list = [], api_token=None):
+    def __init__(self, url: str, api_token=None):
         """
         Creates Instance of the Dataloader
 
         :param url: The url to download the dataset from
         :type url: str
-        :param files: A list of files, that will be downloaded from dataset. If the list is empty, whole dataset is downloaded. [Default []]
-        :type files: list
+        :param api_token: The token needed for private data access. [Default: None]
+        :type api_token: str
 
         :raise ValueError: If the provided url is not a valid url.
         :raise ValueError: If files is not an instance of iterable.
@@ -38,7 +38,6 @@ class Dataset:
         if not isinstance(files, list):
             raise ValueError(f"The parameter files needs to be of type iterable")
 
-        self.files = files
         self.downloading_files = []
         self.header = {"X-Dataverse-key": api_token} if api_token else None
 
@@ -121,12 +120,14 @@ class Dataset:
         """Formats the datetime for display"""
         return str(datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")) if timestamp else ""
 
-    def download(self, path: str, post_process=True, remove_after_pp=True):
+    def download(self, path: str, files:list=[], post_process=True, remove_after_pp=True):
         """
         Starts the download
 
         :param path: The path where the files are downloaded.
         :type path: str
+        :param files: A list of files, that will be downloaded from dataset. If the list is empty, whole dataset is downloaded. [Default []]
+        :type files: list
         :param post_process: Indicates if the files should be post processed [Default: True].
         :type post_process: bool
         :param remove_after_pp: Indicates if the files should be deleted after being post processed [Default: True].
@@ -144,9 +145,9 @@ class Dataset:
             if len(self.download_files) > 0:
 
                 # Check if user wants to download only specific files
-                if self.files:
+                if files:
                     self.download_files = [
-                        f for f in self.download_files if f.name in self.files
+                        f for f in self.download_files if f.name in files
                     ]
 
                 console = Console() 

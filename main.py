@@ -21,9 +21,9 @@ def main():
     URL = config["URL"]
     API_TOKEN = config["API_TOKEN"]
 
-    dl = Dataset(URL, files=FILES, api_token=API_TOKEN)
+    dl = Dataset(URL, api_token=API_TOKEN)
     dl.summary()
-    dl.download(PATH)
+    dl.download(PATH, files=FILES)
 
 if __name__ == "__main__":
     main()
