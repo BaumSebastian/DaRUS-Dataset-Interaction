@@ -1,9 +1,9 @@
 # DaRUS Dataset Interaction
 
-A Python package for easily downloading datasets from the ![DaRUS](https://darus.uni-stuttgart.de/) (DataRepository of the University of Stuttgart) platform.
+A Python package for easily downloading datasets from the [DaRUS](https://darus.uni-stuttgart.de/) (DataRepository of the University of Stuttgart) platform. 
+Currently the web interface of darus limits the size of downloads by 2 GB, which makes it hard to download big datasets like the [FEM Dataset](https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801) example below. This package enables interaction with the dataset by downloading the whole dataset (or [specific files](#download-specific-files)), handles authentication and directory management.
 
 ## Table of Contents
-- [Overview](#overview)
 - [Installation](#installation)
 - [Usage](#usage)
   - [Basic Usage](#basic-usage)
@@ -15,18 +15,13 @@ A Python package for easily downloading datasets from the ![DaRUS](https://darus
 - [Contributing](#contributing)
 - [Additional Resources](#additional-resources)
 
-## Overview
-
-This package provides a simple interface to download complete datasets or specific files from DaRUS repositories like [FEM Dataset](https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801). It handses authentication, file filtering, and download management.
-
 ## Installation
 
 Install directly from GitHub using pip:
 
 ```bash
-pip install git+https://github.com/baumsebastian/darus.git
+pip install git+https://github.com/BaumSebastian/DaRUS-Dataset-Interaction.git
 ```
-
 
 ## Usage
 
