@@ -113,6 +113,20 @@ class Dataset:
         # Display the table
         console.print(table)
 
+        # Create a table to display the information
+        table = Table(title="Files in Dataset", title_justify="left")
+
+        table.add_column("Name", justify="left")
+        table.add_column("Size", justify="left")
+        table.add_column("Original Available", justify="left")
+        table.add_column("Description", justify="left")
+
+        for file in self.download_files:
+            table.add_row(file.name, file.get_filesize(), f"[green]✓({file.original_file_name})[/green]" if file.original_file_name else "", file.description)
+
+        # Display the table
+        console.print(table)
+
     def format_datetime(self, timestamp):
         """Formats the datetime for display"""
         return str(datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")) if timestamp else ""

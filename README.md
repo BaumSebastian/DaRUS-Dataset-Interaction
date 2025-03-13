@@ -120,7 +120,7 @@ ds = Dataset(url)
 ds.summary()
 ds.download(path)
 ```
-**Note:** The summary is only printed, when `ds.summary()` is called.
+**Note:** The _Dataset Summary_ and _Files in Dataset_ is only printed, when `ds.summary()` is called.
 
 The output looks like following:
 ```bash
@@ -130,9 +130,24 @@ Dataset Summary
 ┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
 │ URL           │ https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801 │
 │ Persistent ID │ doi:10.18419/DARUS-4801                                                           │
-│ Last Update   │ 2025-03-07 22:56:30                                                               │
+│ Last Update   │ 2025-03-12 12:32:17                                                               │
 │ License       │ CC BY 4.0                                                                         │
 └───────────────┴───────────────────────────────────────────────────────────────────────────────────┘
+Files in Dataset
+┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Name              ┃ Size    ┃ Original Available ┃ Description                                                 ┃
+┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ 113525_116825.zip │ 59.2 GB │                    │ Contains all simulations with ID between 113525 and 116825. │
+│ 116826_211007.zip │ 59.2 GB │                    │ Contains all simulations with ID between 116826 and 211007. │
+│ 16039_19338.zip   │ 59.2 GB │                    │ Contains all simulations with ID between 16039 and 19338.   │
+│ 19339_113524.zip  │ 59.1 GB │                    │ Contains all simulations with ID between 19339 and 113524.  │
+│ 257076_260375.zip │ 59.7 GB │                    │ Contains all simulations with ID between 257076 and 260375. │
+│ 260376_306443.zip │ 59.8 GB │                    │ Contains all simulations with ID between 260376 and 306443. │
+│ 306444_309743.zip │ 59.7 GB │                    │ Contains all simulations with ID between 306444 and 309743. │
+│ 309744_403925.zip │ 59.6 GB │                    │ Contains all simulations with ID between 309744 and 403925. │
+│ 403926_406296.zip │ 42.6 GB │                    │ Contains all simulations with ID between 403926 and 406296. │
+│ metadata.tab      │ 2.5 MB  │ ✓(metadata.csv)    │ Metadata of the simulations.                                │
+└───────────────────┴─────────┴────────────────────┴─────────────────────────────────────────────────────────────┘
 Downloading...
 ┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Name              ┃ Size    ┃ Directory           ┃ Download Original ┃ Description                                                 ┃
