@@ -1,4 +1,3 @@
-import re
 import json
 import requests
 import validators
@@ -52,6 +51,8 @@ class Dataset:
         self.last_update_time = None
         self.create_time = None
         self.license_name = None
+        self.title = None
+        self.authors = []
 
         self._get_dataset_information()
 
@@ -63,6 +64,13 @@ class Dataset:
             r.raise_for_status()
 
             dataset_info = json.loads(r.text)["data"]["latestVersion"]
+
+            for field in dataset_info['metadataBlocks']['citation']['fields']:
+                if field['typeName'] == 'title':
+                    self.title=field['value']
+                elif field['typeName'] == 'author': 
+                    self.authors = [f['authorName']['value'] for f in field['value']]
+
             self.persistent_id = dataset_info["datasetPersistentId"]
             self.version_state = dataset_info["versionState"]
             self.last_update_time = dataset_info["lastUpdateTime"]
@@ -106,6 +114,11 @@ class Dataset:
 
         # Add rows with rich formatting
         table.add_row("URL", str(self.url.geturl()))
+        table.add_row("Title", self.title)
+
+        if len(self.authors) > 0:
+            table.add_row("Authors", "; ".join(self.authors))
+
         table.add_row("Persistent ID", str(self.persistent_id))
         table.add_row("Last Update", self.format_datetime(self.last_update_time))
         table.add_row("License", self.license_name)
