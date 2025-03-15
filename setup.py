@@ -1,13 +1,19 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name="darus",
-    version="0.0.1",
-    description="Basic interaction with DaRUS",
-    url="https://github.com/BaumSebastian/DaRUS-Dataset-Interaction",
+    version="0.1.0",
     author="Sebastian Baum",
-    license="GNU",
+    description="Basic interaction with DaRUS",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+    url="https://github.com/BaumSebastian/DaRUS-Dataset-Interaction",
     packages=["darus"],
-    zip_safe=False,
+    license="GNU",
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
     install_requires=["requests", "validators", "humanize", "rich", "pyyaml"],
 )
