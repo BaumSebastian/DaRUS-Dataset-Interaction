@@ -7,8 +7,9 @@ import os
 from pathlib import Path
 from urllib.parse import urlparse
 
+
 class DatasetFile:
-    def __init__(self, json: dict, server_url: str, download_original:bool = True):
+    def __init__(self, json: dict, server_url: str, download_original: bool = True):
         """
         Creates an instance of a dataset file.
 
@@ -17,7 +18,7 @@ class DatasetFile:
         :param server_url: The url of the server where the dataset is stored
         :type server_url: str
         :param download_original: Indicates that if a original file exists, if it should be downloaded instead [Default: bool]
-        :type download_original: bool 
+        :type download_original: bool
 
         :raise KeyError: If a required key is not in json. See get_required_keys for a list of the keys.
         :raise ValueError: If the server_url concatenated with the other information is not a valid url.
@@ -32,9 +33,13 @@ class DatasetFile:
         self.__hash = data_file["checksum"]["value"]
         self.has_original = "originalFileName" in data_file
         self.download_original = download_original
-        self.original_file_name = data_file['originalFileName'] if self.has_original else ""
-        self.friendly_type = data_file['friendlyType'] if 'friendlyType' in data_file else ""
-        self.do_extract = self.friendly_type == 'ZIP Archive'
+        self.original_file_name = (
+            data_file["originalFileName"] if self.has_original else ""
+        )
+        self.friendly_type = (
+            data_file["friendlyType"] if "friendlyType" in data_file else ""
+        )
+        self.do_extract = self.friendly_type == "ZIP Archive"
         self.file_path = None  # Will be set if downloaded successfully
 
         self.parsed_server_url = urlparse(server_url)
@@ -85,16 +90,16 @@ class DatasetFile:
             dir = Path(path) / self.sub_dir
             dir.mkdir(parents=True, exist_ok=True)
 
-            file_path = dir / name 
+            file_path = dir / name
             self.file_path = file_path
 
             downloaded = 0
             with requests.get(url, headers=header, stream=True) as r:
                 r.raise_for_status()
-                with open(file_path, 'wb') as f:
-                    for chunk in r.iter_content(chunk_size=chunk_size): 
+                with open(file_path, "wb") as f:
+                    for chunk in r.iter_content(chunk_size=chunk_size):
                         downloaded += len(chunk)
-                        yield(downloaded)
+                        yield (downloaded)
                         f.write(chunk)
         except FileExistsError as fe:
             print(
@@ -151,8 +156,8 @@ class DatasetFile:
         """post process the file."""
         processed_successfully = True
 
-        if ( self.file_path and os.path.isfile(self.file_path)):
-            # process zip files 
+        if self.file_path and os.path.isfile(self.file_path):
+            # process zip files
             if self.file_path.suffix == ".zip":
                 try:
                     with zipfile.ZipFile(self.file_path, "r") as zip_ref:
@@ -160,4 +165,4 @@ class DatasetFile:
                 except Exception as e:
                     print(f"Error while trying to extract {self.file_path}.\n{e}")
                     processed_successfully = False
-        return processed_successfully 
+        return processed_successfully

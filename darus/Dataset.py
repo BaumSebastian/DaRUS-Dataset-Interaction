@@ -7,30 +7,38 @@ from urllib.parse import urlparse
 from datetime import datetime
 
 from rich.console import Console
-from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn, TimeElapsedColumn, TimeRemainingColumn, DownloadColumn, TransferSpeedColumn, SpinnerColumn
+from rich.progress import (
+    Progress,
+    TextColumn,
+    BarColumn,
+    TaskProgressColumn,
+    TimeElapsedColumn,
+    TimeRemainingColumn,
+    DownloadColumn,
+    TransferSpeedColumn,
+    SpinnerColumn,
+)
 from rich.spinner import Spinner
 from rich.table import Table
 from rich.text import Text
 
-# Custom import
 from .DatasetFile import DatasetFile
 from .utils import dir_exists
 
 
 class Dataset:
-    def __init__(self, url: str, api_token=None):
+    def __init__(self, url: str, api_token: str = None):
         """
-        Creates Instance of the Dataloader
+        Creates Instance of the Dataloader.
 
-        :param url: The url to download the dataset from
+        :param url: The url to download the dataset from.
         :type url: str
         :param api_token: The token needed for private data access. [Default: None]
         :type api_token: str
 
         :raise ValueError: If the provided url is not a valid url.
-        :raise ValueError: If files is not an instance of iterable.
         """
-        
+
         if not validators.url(url):
             raise ValueError(f"Provided url is not valid {url}.")
 
@@ -38,14 +46,15 @@ class Dataset:
         self.header = {"X-Dataverse-key": api_token} if api_token else None
 
         self.url = urlparse(url)
+
         self.server_url = self.url._replace(
             path="", params="", query="", fragment=""
         ).geturl()
+
         self.dataset_url = self.url._replace(
             path="/api/datasets/:persistentId/"
         ).geturl()
 
-        # Dataset information
         self.persistent_id = None
         self.version_state = None
         self.last_update_time = None
@@ -65,11 +74,11 @@ class Dataset:
 
             dataset_info = json.loads(r.text)["data"]["latestVersion"]
 
-            for field in dataset_info['metadataBlocks']['citation']['fields']:
-                if field['typeName'] == 'title':
-                    self.title=field['value']
-                elif field['typeName'] == 'author': 
-                    self.authors = [f['authorName']['value'] for f in field['value']]
+            for field in dataset_info["metadataBlocks"]["citation"]["fields"]:
+                if field["typeName"] == "title":
+                    self.title = field["value"]
+                elif field["typeName"] == "author":
+                    self.authors = [f["authorName"]["value"] for f in field["value"]]
 
             self.persistent_id = dataset_info["datasetPersistentId"]
             self.version_state = dataset_info["versionState"]
@@ -77,28 +86,17 @@ class Dataset:
             self.create_time = dataset_info["createTime"]
             self.license_name = dataset_info["license"]["name"]
 
-            file_info = dataset_info["files"]
-            self.download_files = list(
-                map(
-                    lambda item_info: DatasetFile(item_info, self.server_url),
-                    file_info,
-                )
-            )
+            files_info = dataset_info["files"]
+            self.download_files = [
+                DatasetFile(file_info, self.server_url) for file_info in files_info
+            ]
         except KeyError as ke:
-            print(
-                f"Couldn't find following key in web response:{ke}"
-            )
+            print(f"Couldn't find following key in web response:{ke}")
             self.download_files = []
-        except (
-            requests.HTTPError
-        ) as exception: 
-            print(
-                f"An error occured while trying to access dataset.\n{str(exception)}"
-            )
+        except requests.HTTPError as exception:
+            print(f"An error occured while trying to access dataset.\n{str(exception)}")
             self.download_files = []
-        except (
-            Exception
-        ) as exception:  
+        except Exception as exception:
             print(exception)
             self.download_files = []
 
@@ -135,16 +133,29 @@ class Dataset:
         table.add_column("Description", justify="left")
 
         for file in self.download_files:
-            table.add_row(file.name, file.get_filesize(), f"[green]✓({file.original_file_name})[/green]" if file.original_file_name else "", file.description)
+            table.add_row(
+                file.name,
+                file.get_filesize(),
+                (
+                    f"[green]✓({file.original_file_name})[/green]"
+                    if file.original_file_name
+                    else ""
+                ),
+                file.description,
+            )
 
         # Display the table
         console.print(table)
 
     def format_datetime(self, timestamp):
         """Formats the datetime for display"""
-        return str(datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")) if timestamp else ""
+        return (
+            str(datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")) if timestamp else ""
+        )
 
-    def download(self, path: str, files:list=[], post_process=True, remove_after_pp=True):
+    def download(
+        self, path: str, files: list = [], post_process=True, remove_after_pp=True
+    ):
         """
         Starts the download
 
@@ -152,9 +163,9 @@ class Dataset:
         :type path: str
         :param files: A list of files, that will be downloaded from dataset. If the list is empty, whole dataset is downloaded. [Default []]
         :type files: list
-        :param post_process: Indicates if the files should be post processed [Default: True].
+        :param post_process: Indicates if the files should be post processed. [Default: True]
         :type post_process: bool
-        :param remove_after_pp: Indicates if the files should be deleted after being post processed [Default: True].
+        :param remove_after_pp: Indicates if the files should be deleted after being post processed. [Default: True]
         :type remove_after_pp: bool
         """
 
@@ -163,7 +174,6 @@ class Dataset:
             warnings.warn(
                 "Disabled removing files after post processing, as no post processing is desired."
             )
-
 
         path = Path(path)
         if dir_exists(path):
@@ -175,8 +185,7 @@ class Dataset:
                         f for f in self.download_files if f.name in files
                     ]
 
-
-                console = Console() 
+                console = Console()
                 table = Table(title="Downloading...", title_justify="left")
 
                 table.add_column("Name", justify="left")
@@ -186,11 +195,21 @@ class Dataset:
                 table.add_column("Description", justify="left")
 
                 for file in self.download_files:
-                    table.add_row(file.name, file.get_filesize(), str(path / file.sub_dir), f"[green]✓({file.original_file_name})[/green]" if file.original_file_name else "", file.description)
+                    table.add_row(
+                        file.name,
+                        file.get_filesize(),
+                        str(path / file.sub_dir),
+                        (
+                            f"[green]✓({file.original_file_name})[/green]"
+                            if file.original_file_name
+                            else ""
+                        ),
+                        file.description,
+                    )
 
                 console.print(table)
 
-                    # Create a single progress display with ETA and file size
+                # Create a single progress display with ETA and file size
                 with Progress(
                     TextColumn("[bold]{task.description}"),
                     BarColumn(),
@@ -203,7 +222,7 @@ class Dataset:
                     TimeRemainingColumn(),
                     "•",
                     TransferSpeedColumn(),
-                    console=console
+                    console=console,
                 ) as progress:
 
                     for i, f in enumerate(self.download_files):
@@ -212,23 +231,31 @@ class Dataset:
                         name = f.name
 
                         # Downloading
-                        task_id = progress.add_task(f"[blue]Downloading {f.name}[/blue]", total=f.get_filesize(False))
+                        task_id = progress.add_task(
+                            f"[blue]Downloading {f.name}[/blue]",
+                            total=f.get_filesize(False),
+                        )
                         for current_size in f.download(path, header=self.header):
                             progress.update(task_id, completed=int(current_size))
 
-                        progress.update(task_id, description=f"[yellow]Processing {f.name}[/yellow]")
+                        progress.update(
+                            task_id, description=f"[yellow]Processing {f.name}[/yellow]"
+                        )
                         download_correct = f.validate()
                         if download_correct:
                             if f.do_extract and post_process:
                                 # Post processing
                                 process_result = f.process()
-                                
+
                                 # Removing only if processing succeeded
                                 remove_result = False
                                 if process_result and remove_after_pp:
-                                    progress.update(task_id, description=f"[red]Removing {f.name}[/red]")
+                                    progress.update(
+                                        task_id,
+                                        description=f"[red]Removing {f.name}[/red]",
+                                    )
                                     remove_result = f.remove()
-                                
+
                                 # Final status in the same line
                                 if process_result and remove_result:
                                     status = f"[green]✓ {f.name} (processed & removed)[/green]"
@@ -238,14 +265,26 @@ class Dataset:
                                     status = f"[yellow]⚠ {f.name} (processed failed, removed)[/yellow]"
                                 else:
                                     status = f"[red]✗ {f.name} (processed & removal failed)[/red]"
-                                
-                                progress.update(task_id, description=status, completed=f.get_filesize(False))
+
+                                progress.update(
+                                    task_id,
+                                    description=status,
+                                    completed=f.get_filesize(False),
+                                )
                             else:
                                 status = f"[green]✓ {f.name}[/green]"
-                                progress.update(task_id, description=status, complected=f.get_filesize(False))
+                                progress.update(
+                                    task_id,
+                                    description=status,
+                                    complected=f.get_filesize(False),
+                                )
                         else:
                             status = f"[red]✗ {f.name} (wrong hash value)[/red]"
-                            progress.update(task_id, description=status, complected=f.get_filesize(False))
+                            progress.update(
+                                task_id,
+                                description=status,
+                                complected=f.get_filesize(False),
+                            )
             else:
                 print(f"No files to download.")
         else:
