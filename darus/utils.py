@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 
 def dir_exists(path: str) -> bool:
@@ -11,23 +11,34 @@ def dir_exists(path: str) -> bool:
     :rtype: bool
     """
 
-    path_exists = os.path.isdir(path)
+    path_obj = Path(path).resolve()
 
-    if not path_exists:
-        create = (
-            input(
-                f"The directory '{path}' does not exist.\nWould you like to create it? (yes[y]/no[n]): "
-            )
-            .strip()
-            .lower()
+    try:
+        path_is_existing_dir = path_obj.is_dir()
+    except PermissionError as pe:
+        print(pe)
+        return False
+    except Exception as e:
+        print(
+            f"An error occured while trying to check if '{path_obj}' is a valid directory. {e}"
         )
+        return False
 
-        if create in ["yes", "y"]:
-            try:
-                os.makedirs(path)
-            except Exception as e:
-                print(f"An error occurred while creating the directory: {e}")
-            else:
-                path_exists = os.path.isdir(path)
+    if path_is_existing_dir:
+        return True
 
-    return path_exists
+    create_directory = (
+        input(
+            f"The directory '{path_obj}' does not exist.\nWould you like to create it? (yes[y]/no[n]): "
+        )
+        .strip()
+        .lower()
+    ) in ["yes", "y"]
+
+    if create_directory:
+        try:
+            path_obj.mkdir(parents=True, exist_ok=True)
+        except Exception as e:
+            print(f"An error occurred while creating the directory: {e}")
+
+    return path_obj.is_dir()
