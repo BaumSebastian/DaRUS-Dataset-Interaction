@@ -1,4 +1,4 @@
-path: "./my_dataset"  # The root directory of the dataset. 
+path: "./data"  # The root directory of the dataset. 
 files: []  # Empty list to download all files (insert filename for specific download).
 api_token: ""  # Leave empty if authorization not needed.
 url: "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801" # url to the dataset to download.

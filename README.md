@@ -48,7 +48,7 @@ Download an entire dataset:
 from darus import Dataset 
 
 url = "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801"
-path = "./my_dataset"
+path = "./data"
 
 # Download the complete dataset
 ds = Dataset(url)
@@ -67,7 +67,7 @@ Download only selected files (`["metadata.tab"]`) from a dataset:
 from darus import Dataset 
 
 url = "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801"
-path = "./my_dataset"
+path = "./data"
 
 files = ["metadata.tab"] 
 
@@ -85,7 +85,7 @@ For datasets that require authentication use the `api_token` of your DaRUS accou
 from darus import Dataset 
 
 url = "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801"
-path = "./my_dataset"
+path = "./data"
 
 api_token = 'xxxx-xxxx-xxxx-xxxx'
 
@@ -106,7 +106,7 @@ Executing following script, results in the output below.
 from darus import Dataset 
 
 url = "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801"
-path = "./my_dataset"
+path = "./data"
 
 ds = Dataset(url)
 ds.summary()
@@ -115,7 +115,7 @@ ds.download(path)
 **Note:** The _Dataset Summary_ and _Files in Dataset_ is only printed, when `ds.summary()` is called.
 
 The output looks like following:
-```console
+``` bash
 Dataset Summary
 ┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Property      ┃ Value                                                                             ┃
@@ -141,20 +141,20 @@ Files in Dataset
 │ metadata.tab      │ 2.5 MB  │ ✓(metadata.csv)    │ Metadata of the simulations.                                │
 └───────────────────┴─────────┴────────────────────┴─────────────────────────────────────────────────────────────┘
 Downloading...
-┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ Name              ┃ Size    ┃ Directory           ┃ Download Original ┃ Description                                                 ┃
-┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│ 113525_116825.zip │ 59.2 GB │ .\my_dataset\data   │                   │ Contains all simulations with ID between 113525 and 116825. │
-│ 116826_211007.zip │ 59.2 GB │ .\my_dataset\data   │                   │ Contains all simulations with ID between 116826 and 211007. │
-│ 16039_19338.zip   │ 59.2 GB │ .\my_dataset\data   │                   │ Contains all simulations with ID between 16039 and 19338.   │
-│ 19339_113524.zip  │ 59.1 GB │ .\my_dataset\data   │                   │ Contains all simulations with ID between 19339 and 113524.  │
-│ 257076_260375.zip │ 59.7 GB │ .\my_dataset\data   │                   │ Contains all simulations with ID between 257076 and 260375. │
-│ 260376_306443.zip │ 59.8 GB │ .\my_dataset\data   │                   │ Contains all simulations with ID between 260376 and 306443. │
-│ 306444_309743.zip │ 59.7 GB │ .\my_dataset\data   │                   │ Contains all simulations with ID between 306444 and 309743. │
-│ 309744_403925.zip │ 59.6 GB │ .\my_dataset\data   │                   │ Contains all simulations with ID between 309744 and 403925. │
-│ 403926_406296.zip │ 42.6 GB │ .\my_dataset\data   │                   │ Contains all simulations with ID between 403926 and 406296. │
-│ metadata.tab      │ 2.5 MB  │ .\my_dataset\       │ ✓(metadata.csv)   │ Metadata of the simulations.                                │
-└───────────────────┴─────────┴─────────────────────┴───────────────────┴─────────────────────────────────────────────────────────────┘
+┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Name              ┃ Size    ┃ Directory  ┃ Download Original ┃ Description                                                 ┃
+┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ 113525_116825.zip │ 59.2 GB │ .\data\h5\ │                   │ Contains all simulations with ID between 113525 and 116825. │
+│ 116826_211007.zip │ 59.2 GB │ .\data\h5\ │                   │ Contains all simulations with ID between 116826 and 211007. │
+│ 16039_19338.zip   │ 59.2 GB │ .\data\h5\ │                   │ Contains all simulations with ID between 16039 and 19338.   │
+│ 19339_113524.zip  │ 59.1 GB │ .\data\h5\ │                   │ Contains all simulations with ID between 19339 and 113524.  │
+│ 257076_260375.zip │ 59.7 GB │ .\data\h5\ │                   │ Contains all simulations with ID between 257076 and 260375. │
+│ 260376_306443.zip │ 59.8 GB │ .\data\h5\ │                   │ Contains all simulations with ID between 260376 and 306443. │
+│ 306444_309743.zip │ 59.7 GB │ .\data\h5\ │                   │ Contains all simulations with ID between 306444 and 309743. │
+│ 309744_403925.zip │ 59.6 GB │ .\data\h5\ │                   │ Contains all simulations with ID between 309744 and 403925. │
+│ 403926_406296.zip │ 42.6 GB │ .\data\h5\ │                   │ Contains all simulations with ID between 403926 and 406296. │
+│ metadata.tab      │ 2.5 MB  │ .\data\    │ ✓(metadata.csv)   │ Metadata of the simulations.                                │
+└───────────────────┴─────────┴────────────┴───────────────────┴─────────────────────────────────────────────────────────────┘
 Downloading 113525_116825.zip ━━━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.9% • 5.2/59.2 GB • 0:08:07 • 1:22:43 • 10.9 MB/s
 ....
 ```
