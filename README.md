@@ -30,7 +30,7 @@ The package can be configured with the following parameters:
 | Parameter | Description | Default |
 |-|-|-|
 | url | The DARUS dataset URL | Required |
-| path | Local directory where downloaded files will be stored |Required |
+| path | Local directory where downloaded files will be stored | Required |
 | files | List of specific files to download (if empty list, all files will be downloaded) | `[ ]`|
 | api_token | Authentication token for restricted datasets |`None`|
 
@@ -61,7 +61,7 @@ ds.download(path)
 
 ### Download Specific Files
 
-Download only selected files from a dataset:
+Download only selected files (`["metadata.tab"]`) from a dataset:
 
 ```python
 from darus import Dataset 
@@ -69,8 +69,7 @@ from darus import Dataset
 url = "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801"
 path = "./my_dataset"
 
-# Download only 'metadata.tab' 
-files = ["metadata.tab"]
+files = ["metadata.tab"] 
 
 ds = Dataset(url)
 ds.download(path, files=files)
@@ -80,7 +79,7 @@ ds.download(path, files=files)
 
 ### Private Datasets
 
-For datasets that require authentication:
+For datasets that require authentication use the `api_token` of your DaRUS account.
 
 ```python
 from darus import Dataset 
@@ -88,15 +87,14 @@ from darus import Dataset
 url = "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801"
 path = "./my_dataset"
 
-# API token for accessing private datasets
-token = 'xxxx-xxxx-xxxx-xxxx'
+api_token = 'xxxx-xxxx-xxxx-xxxx'
 
-ds = Dataset(url, api_token=token)
+ds = Dataset(url, api_token=api_token)
 ds.download(path)
 ```
 ### Post Processing 
 
-The method `download` of `Dataset` accepts two additional arguments.
+The method `download` of `Dataset` accepts two optional arguments.
 - `post_process` : Zip archieves are automatically extracted, after download completed. Default: `True`.
 - `remove_after_pp`: The Zip archieves are deleted after extration. Default: `True`.
 
@@ -110,7 +108,6 @@ from darus import Dataset
 url = "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801"
 path = "./my_dataset"
 
-# Download the complete dataset
 ds = Dataset(url)
 ds.summary()
 ds.download(path)
@@ -118,7 +115,7 @@ ds.download(path)
 **Note:** The _Dataset Summary_ and _Files in Dataset_ is only printed, when `ds.summary()` is called.
 
 The output looks like following:
-```bash
+```console
 Dataset Summary
 ┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Property      ┃ Value                                                                             ┃

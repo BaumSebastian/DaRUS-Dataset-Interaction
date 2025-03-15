@@ -4,26 +4,23 @@ import requests
 import yaml
 import json
 
-# Custom imports
 from darus import Dataset
-
 
 def main():
 
-    CONFIG_FILE = "config.example.yaml"
+    config_file_path = "./config/config_template.yaml"
 
-    with open(CONFIG_FILE) as cf_file:
-        config = yaml.safe_load(cf_file.read())
+    with open(config_file_path) as config_file:
+        config = yaml.safe_load(config_file.read())
 
-    # Load Config
-    PATH = config["PATH"]
-    FILES = config["FILES"]
-    URL = config["URL"]
-    API_TOKEN = config["API_TOKEN"]
+    path = config["path"]
+    files = config["files"]
+    url = config["url"]
+    api_token = config["api_token"]
 
-    dl = Dataset(URL, api_token=API_TOKEN)
+    dl = Dataset(url, api_token=api_token)
     dl.summary()
-    dl.download(PATH, files=FILES)
+    dl.download(path, files=files)
 
 if __name__ == "__main__":
-    main()
+  main()
