@@ -6,6 +6,7 @@ import json
 
 from darus import Dataset
 
+
 def main():
 
     config_file_path = "./config/config_template.yaml"
@@ -22,5 +23,6 @@ def main():
     dl.summary()
     dl.download(path, files=files)
 
+
 if __name__ == "__main__":
-  main()
+    main()
