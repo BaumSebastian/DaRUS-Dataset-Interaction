@@ -1,6 +1,6 @@
 # DaRUS Dataset Interaction
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-green.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Python 3.6+](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
@@ -8,17 +8,22 @@ A Python package for easily downloading datasets from the [DaRUS](https://darus.
 Currently the web interface of darus limits the size of downloads by 2 GB, which makes it hard to download big datasets like the [FEM Dataset](https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801) example below. This package enables interaction with the dataset by downloading the whole dataset (or [specific files](#download-specific-files)), handles authentication and directory management.
 
 ## Table of Contents
-- [Installation](#installation)
-- [Python API Usage](#python-api-usage)
-  - [Basic Usage](#basic-usage)
-  - [Download Specific Files](#download-specific-files)
-  - [Private Datasets](#private-datasets)
-  - [Post Processing](#post-processing)
-  - [Sample Output](#sample-output)
-- [CLI Usage (for developers)](#cli-usage-for-developers)
-- [Contributing](#contributing)
-- [License](#license)
-- [Additional Resources](#additional-resources)
+- [DaRUS Dataset Interaction](#darus-dataset-interaction)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+    - [Quick Install (Recommended)](#quick-install-recommended)
+    - [From Source](#from-source)
+    - [Development Setup](#development-setup)
+  - [Python API Usage](#python-api-usage)
+    - [Basic Usage](#basic-usage)
+    - [Download Specific Files](#download-specific-files)
+    - [Private Datasets](#private-datasets)
+    - [Post Processing](#post-processing)
+    - [Sample Output](#sample-output)
+  - [CLI Usage (for developers)](#cli-usage-for-developers)
+  - [License](#license)
+  - [Contributing](#contributing)
+  - [Additional Resources](#additional-resources)
 
 ## Installation
 

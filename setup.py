@@ -14,11 +14,11 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/BaumSebastian/DaRUS-Dataset-Interaction",
     packages=find_packages(),
-    license="MIT",
+    license="GPL-3.0",
     python_requires=">=3.6",
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
     install_requires=[
