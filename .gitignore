@@ -1,5 +1,5 @@
 # Ignore the config in order to avoid tracking tokens etc.
-**/config.yaml
+config_private.yaml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

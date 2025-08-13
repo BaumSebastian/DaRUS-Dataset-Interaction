@@ -4,16 +4,19 @@ A Python package for easily downloading datasets from the [DaRUS](https://darus.
 Currently the web interface of darus limits the size of downloads by 2 GB, which makes it hard to download big datasets like the [FEM Dataset](https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801) example below. This package enables interaction with the dataset by downloading the whole dataset (or [specific files](#download-specific-files)), handles authentication and directory management.
 
 ## Table of Contents
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Basic Usage](#basic-usage)
-  - [Download Specific Files](#download-specific-files)
-  - [Private Datasets](#private-datasets)
-  - [Post Processing](#post-processingdeletion)
-  - [Sample Output](#sample-output)
-- [License](#license)
-- [Contributing](#contributing)
-- [Additional Resources](#additional-resources)
+- [DaRUS Dataset Interaction](#darus-dataset-interaction)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [Command Line Interface](#command-line-interface)
+    - [Python API Usage](#python-api-usage)
+    - [Download Specific Files](#download-specific-files)
+    - [Private Datasets](#private-datasets)
+    - [Post Processing](#post-processing)
+    - [Sample Output](#sample-output)
+  - [License](#license)
+  - [Contributing](#contributing)
+  - [Additional Resources](#additional-resources)
 
 ## Installation
 
@@ -25,21 +28,39 @@ pip install git+https://github.com/BaumSebastian/DaRUS-Dataset-Interaction.git
 
 ## Usage
 
-The package can be configured with the following parameters:
+### Command Line Interface
 
-| Parameter | Description | Default |
-|-|-|-|
-| url | The DARUS dataset URL | Required |
-| path | Local directory where downloaded files will be stored | Required |
-| files | List of specific files to download (if empty list, all files will be downloaded) | `[ ]`|
-| api_token | Authentication token for restricted datasets |`None`|
+The easiest way to use the package is through the command line interface:
 
-All examples below use this sample dataset:
+```bash
+# Basic usage with default config
+python main.py
+
+# Override specific settings
+python main.py --url "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801" --path "./downloads"
+
+# Use custom config file
+python main.py --config config.yaml
+
+# Download specific files only
+python main.py --files metadata.csv data.zip
+
+# Private datasets with API token
+python main.py --token "your-api-token"
+
+# Combine multiple arguments
+python main.py --path "/your/download/path" --token "your-token" --files metadata.csv
 ```
-https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801
-```
 
-### Basic Usage
+**Available Arguments:**
+- `--config, -c`: Config file path (default: `config/config_template.yaml`)
+- `--url, -u`: Dataset URL
+- `--path, -p`: Download directory path
+- `--token, -t`: API token for authentication
+- `--files, -f`: Specific files to download (space-separated)
+- `--help`: Show help message
+
+### Python API Usage
 
 
 Download an entire dataset:
