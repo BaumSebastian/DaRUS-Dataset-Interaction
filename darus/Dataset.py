@@ -276,14 +276,14 @@ class Dataset:
                                 progress.update(
                                     task_id,
                                     description=status,
-                                    complected=f.get_filesize(False),
+                                    completed=f.get_filesize(False),
                                 )
                         else:
                             status = f"[red]✗ {f.name} (wrong hash value)[/red]"
                             progress.update(
                                 task_id,
                                 description=status,
-                                complected=f.get_filesize(False),
+                                completed=f.get_filesize(False),
                             )
             else:
                 print(f"No files to download.")
