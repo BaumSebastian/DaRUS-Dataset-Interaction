@@ -4,19 +4,21 @@ from pathlib import Path
 
 from darus import Dataset
 
+
 def main():
     # Get the directory where this script is located
     script_dir = Path(__file__).parent
-    default_config = script_dir / 'config.yaml'
-    
-    parser = argparse.ArgumentParser(description='Download datasets from DaRUS')
-    
-    parser.add_argument('--config', '-c', default=str(default_config),
-                       help='Config file path')
-    parser.add_argument('--url', '-u', help='Dataset URL')
-    parser.add_argument('--path', '-p', help='Download path')
-    parser.add_argument('--token', '-t', help='API token')
-    parser.add_argument('--files', '-f', nargs='*', help='Specific files to download')
+    default_config = script_dir / "config.yaml"
+
+    parser = argparse.ArgumentParser(description="Download datasets from DaRUS")
+
+    parser.add_argument(
+        "--config", "-c", default=str(default_config), help="Config file path"
+    )
+    parser.add_argument("--url", "-u", help="Dataset URL")
+    parser.add_argument("--path", "-p", help="Download path")
+    parser.add_argument("--token", "-t", help="API token")
+    parser.add_argument("--files", "-f", nargs="*", help="Specific files to download")
 
     args = parser.parse_args()
 
