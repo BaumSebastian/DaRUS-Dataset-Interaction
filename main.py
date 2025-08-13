@@ -4,7 +4,6 @@ from pathlib import Path
 
 from darus import Dataset
 
-
 def main():
     # Get the directory where this script is located
     script_dir = Path(__file__).parent
