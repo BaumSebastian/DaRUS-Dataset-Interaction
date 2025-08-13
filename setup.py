@@ -1,14 +1,17 @@
-# Create this temporarily to test dependency installation
 from setuptools import setup, find_packages
+from pathlib import Path
 
-# Print what packages are found
-print("Found packages:", find_packages())
+# Read README for long description
+readme_file = Path(__file__).parent / "README.md"
+long_description = readme_file.read_text(encoding="utf-8") if readme_file.exists() else ""
 
 setup(
     name="darus",
-    version="0.2.0",
+    version="0.2.1",  # Updated for recent CLI improvements
     author="Sebastian Baum",
-    description="Basic interaction with DaRUS",
+    description="Download datasets from DaRUS (DataRepository of the University of Stuttgart)",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     url="https://github.com/BaumSebastian/DaRUS-Dataset-Interaction",
     packages=find_packages(),
     license="MIT",
@@ -25,5 +28,14 @@ setup(
         "rich>=10.0.0",
         "pyyaml>=5.4.0",
     ],
+    extras_require={
+        "dev": [
+            "pytest>=7.0.0",
+            "pytest-cov>=4.0.0",
+            "pytest-mock>=3.10.0",
+            "responses>=0.23.0",
+            "black>=23.0.0",
+        ]
+    },
     zip_safe=False,  # Ensures proper installation
 )

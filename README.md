@@ -8,64 +8,49 @@ A Python package for easily downloading datasets from the [DaRUS](https://darus.
 Currently the web interface of darus limits the size of downloads by 2 GB, which makes it hard to download big datasets like the [FEM Dataset](https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801) example below. This package enables interaction with the dataset by downloading the whole dataset (or [specific files](#download-specific-files)), handles authentication and directory management.
 
 ## Table of Contents
-- [DaRUS Dataset Interaction](#darus-dataset-interaction)
-  - [Table of Contents](#table-of-contents)
-  - [Installation](#installation)
-  - [Usage](#usage)
-    - [Command Line Interface](#command-line-interface)
-    - [Python API Usage](#python-api-usage)
-    - [Download Specific Files](#download-specific-files)
-    - [Private Datasets](#private-datasets)
-    - [Post Processing](#post-processing)
-    - [Sample Output](#sample-output)
-  - [License](#license)
-  - [Contributing](#contributing)
-  - [Additional Resources](#additional-resources)
+- [Installation](#installation)
+- [Python API Usage](#python-api-usage)
+  - [Basic Usage](#basic-usage)
+  - [Download Specific Files](#download-specific-files)
+  - [Private Datasets](#private-datasets)
+  - [Post Processing](#post-processing)
+  - [Sample Output](#sample-output)
+- [CLI Usage (for developers)](#cli-usage-for-developers)
+- [Contributing](#contributing)
+- [License](#license)
+- [Additional Resources](#additional-resources)
 
 ## Installation
 
-Install directly from GitHub using pip:
+### Quick Install (Recommended)
 
 ```bash
+# Using pip
 pip install git+https://github.com/BaumSebastian/DaRUS-Dataset-Interaction.git
+
+# Using uv (faster) - https://github.com/astral-sh/uv
+uv pip install git+https://github.com/BaumSebastian/DaRUS-Dataset-Interaction.git
 ```
 
-## Usage
-
-### Command Line Interface
-
-The easiest way to use the package is through the command line interface:
+### From Source
 
 ```bash
-# Basic usage with default config
-python main.py
-
-# Override specific settings
-python main.py --url "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801" --path "./downloads"
-
-# Use custom config file
-python main.py --config config.yaml
-
-# Download specific files only
-python main.py --files metadata.csv data.zip
-
-# Private datasets with API token
-python main.py --token "your-api-token"
-
-# Combine multiple arguments
-python main.py --path "/your/download/path" --token "your-token" --files metadata.csv
+git clone https://github.com/BaumSebastian/DaRUS-Dataset-Interaction.git
+cd DaRUS-Dataset-Interaction
+pip install .
 ```
 
-**Available Arguments:**
-- `--config, -c`: Config file path (default: `config/config_template.yaml`)
-- `--url, -u`: Dataset URL
-- `--path, -p`: Download directory path
-- `--token, -t`: API token for authentication
-- `--files, -f`: Specific files to download (space-separated)
-- `--help`: Show help message
+### Development Setup
 
-### Python API Usage
+```bash
+git clone https://github.com/BaumSebastian/DaRUS-Dataset-Interaction.git
+cd DaRUS-Dataset-Interaction
+pip install -e .[dev]  # Includes testing tools
+```
 
+## Python API Usage
+
+### Basic Usage
 
 Download an entire dataset:
 
@@ -183,6 +168,39 @@ Downloading...
 Downloading 113525_116825.zip ━━━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.9% • 5.2/59.2 GB • 0:08:07 • 1:22:43 • 10.9 MB/s
 ....
 ```
+
+## CLI Usage (for developers)
+
+If you cloned the repository, you can use the command line interface:
+
+```bash
+# Basic usage with default config
+python main.py
+
+# Override specific settings
+python main.py --url "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801" --path "./downloads"
+
+# Use custom config file
+python main.py --config config_private.yaml
+
+# Download specific files only
+python main.py --files metadata.csv data.zip
+
+# Private datasets with API token
+python main.py --token "your-api-token"
+
+# Combine multiple arguments
+python main.py --path "/your/download/path" --token "your-token" --files metadata.csv
+```
+
+**Available Arguments:**
+- `--config, -c`: Config file path (default: `config.yaml`)
+- `--url, -u`: Dataset URL
+- `--path, -p`: Download directory path
+- `--token, -t`: API token for authentication
+- `--files, -f`: Specific files to download (space-separated)
+- `--help`: Show help message
+
 ## License
 
 [GNU V3](LICENSE)
