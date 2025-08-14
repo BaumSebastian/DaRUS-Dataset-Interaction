@@ -115,7 +115,9 @@ class DatasetFile:
             )
         except MemoryError as me:
             logger = get_logger(__name__)
-            logger.error(f"MemoryError encountered while downloading '{self.name}': {me}")
+            logger.error(
+                f"MemoryError encountered while downloading '{self.name}': {me}"
+            )
         except Exception as e:
             logger = get_logger(__name__)
             logger.error(f"An unexpected error occurred: {e}")

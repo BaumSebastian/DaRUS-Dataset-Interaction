@@ -5,20 +5,20 @@ from pathlib import Path
 def setup_logging(level=logging.INFO):
     """
     Configure logging for the darus package.
-    
+
     :param level: Logging level (default: INFO)
     """
     logging.basicConfig(
         level=level,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
 
 
 def get_logger(name: str):
     """
     Get a logger instance for the given name.
-    
+
     :param name: Logger name (typically __name__)
     :return: Logger instance
     """
@@ -54,7 +54,9 @@ def dir_exists(path: str, interactive: bool = True) -> bool:
         return True
 
     if not interactive:
-        logger.warning(f"Directory '{path_obj}' does not exist and interactive mode is disabled")
+        logger.warning(
+            f"Directory '{path_obj}' does not exist and interactive mode is disabled"
+        )
         return False
 
     create_directory = (

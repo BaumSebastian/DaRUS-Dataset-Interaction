@@ -10,12 +10,10 @@ def main():
     """Main CLI entry point for darus-download command."""
     # Setup logging
     setup_logging()
-    
+
     parser = argparse.ArgumentParser(description="Download datasets from DaRUS")
 
-    parser.add_argument(
-        "--config", "-c", help="Config file path (optional)"
-    )
+    parser.add_argument("--config", "-c", help="Config file path (optional)")
     parser.add_argument("--url", "-u", help="Dataset URL")
     parser.add_argument("--path", "-p", help="Download path")
     parser.add_argument("--token", "-t", help="API token")

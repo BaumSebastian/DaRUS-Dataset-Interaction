@@ -96,7 +96,9 @@ class Dataset:
             self.download_files = []
         except requests.HTTPError as exception:
             logger = get_logger(__name__)
-            logger.error(f"An error occurred while trying to access dataset: {str(exception)}")
+            logger.error(
+                f"An error occurred while trying to access dataset: {str(exception)}"
+            )
             self.download_files = []
         except Exception as exception:
             logger = get_logger(__name__)
@@ -187,13 +189,17 @@ class Dataset:
                     available_files = {f.name for f in self.download_files}
                     requested_files = set(files)
                     missing_files = requested_files - available_files
-                    
+
                     if missing_files:
                         logger = get_logger(__name__)
                         missing_list = ", ".join(sorted(missing_files))
-                        logger.error(f"Requested files not found in dataset: {missing_list}")
-                        logger.info(f"Available files: {', '.join(sorted(available_files))}")
-                    
+                        logger.error(
+                            f"Requested files not found in dataset: {missing_list}"
+                        )
+                        logger.info(
+                            f"Available files: {', '.join(sorted(available_files))}"
+                        )
+
                     self.download_files = [
                         f for f in self.download_files if f.name in files
                     ]

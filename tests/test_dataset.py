@@ -113,7 +113,9 @@ class TestDatasetInformationRetrieval:
             dataset = Dataset(url)
 
             assert len(dataset.download_files) == 0
-            assert "error occurred while trying to access dataset" in caplog.text.lower()
+            assert (
+                "error occurred while trying to access dataset" in caplog.text.lower()
+            )
 
     def test_invalid_json_response(self, demo_dataset_urls, caplog):
         """Test handling of invalid JSON response."""
@@ -212,11 +214,16 @@ class TestDatasetDownload:
             dataset = Dataset(url)
 
             # Mock all file downloads before calling dataset.download
-            with patch.object(dataset.download_files[0], "download") as mock_download1, \
-                 patch.object(dataset.download_files[0], "validate") as mock_validate1, \
-                 patch.object(dataset.download_files[1], "download") as mock_download2, \
-                 patch.object(dataset.download_files[1], "validate") as mock_validate2:
-                
+            with patch.object(
+                dataset.download_files[0], "download"
+            ) as mock_download1, patch.object(
+                dataset.download_files[0], "validate"
+            ) as mock_validate1, patch.object(
+                dataset.download_files[1], "download"
+            ) as mock_download2, patch.object(
+                dataset.download_files[1], "validate"
+            ) as mock_validate2:
+
                 mock_download1.return_value = iter([1024])
                 mock_validate1.return_value = True
                 mock_download2.return_value = iter([2048])
@@ -276,18 +283,24 @@ class TestDatasetDownload:
             first_file = dataset.download_files[0]  # First file
             zip_file = dataset.download_files[1]  # Second file is ZIP
 
-            with patch.object(first_file, "download") as mock_download1, \
-                 patch.object(first_file, "validate") as mock_validate1, \
-                 patch.object(zip_file, "download") as mock_download2, \
-                 patch.object(zip_file, "validate") as mock_validate2, \
-                 patch.object(zip_file, "process") as mock_process, \
-                 patch.object(zip_file, "remove") as mock_remove, \
-                 patch("rich.console.Console.print") as mock_console_print:
+            with patch.object(first_file, "download") as mock_download1, patch.object(
+                first_file, "validate"
+            ) as mock_validate1, patch.object(
+                zip_file, "download"
+            ) as mock_download2, patch.object(
+                zip_file, "validate"
+            ) as mock_validate2, patch.object(
+                zip_file, "process"
+            ) as mock_process, patch.object(
+                zip_file, "remove"
+            ) as mock_remove, patch(
+                "rich.console.Console.print"
+            ) as mock_console_print:
 
                 # Mock first file (no processing)
                 mock_download1.return_value = iter([1024])
                 mock_validate1.return_value = True
-                
+
                 # Mock ZIP file (with processing)
                 mock_download2.return_value = iter([2048])
                 mock_validate2.return_value = True
