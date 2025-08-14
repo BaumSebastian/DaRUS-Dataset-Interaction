@@ -14,23 +14,29 @@ Currently the web interface of darus limits the size of downloads by 2 GB, which
 - [DaRUS Dataset Interaction](#darus-dataset-interaction)
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
-    - [Quick Install (Recommended)](#quick-install-recommended)
-    - [From Source](#from-source)
-    - [Development Setup](#development-setup)
-  - [Python API Usage](#python-api-usage)
+  - [CLI Usage](#cli-usage)
     - [Basic Usage](#basic-usage)
+    - [Specify Download Path](#specify-download-path)
+    - [Download Specific Files Only](#download-specific-files-only)
+    - [Private Datasets with API Token](#private-datasets-with-api-token)
+    - [Use Custom Config File](#use-custom-config-file)
+  - [Python API Usage](#python-api-usage)
+    - [Basic Usage](#basic-usage-1)
     - [Download Specific Files](#download-specific-files)
     - [Private Datasets](#private-datasets)
     - [Post Processing](#post-processing)
     - [Sample Output](#sample-output)
-  - [CLI Usage (for developers)](#cli-usage-for-developers)
-  - [License](#license)
-  - [Contributing](#contributing)
+  - [Development](#development)
+    - [Setup Development Environment](#setup-development-environment)
+    - [Running from Source](#running-from-source)
+    - [Running Tests](#running-tests)
+    - [Code Quality](#code-quality)
+    - [Project Structure](#project-structure)
+    - [VSCode Debugging](#vscode-debugging)
+    - [Contributing Guidelines](#contributing-guidelines)
   - [Additional Resources](#additional-resources)
 
 ## Installation
-
-### Quick Install (Recommended)
 
 ```bash
 # Using pip
@@ -40,21 +46,47 @@ pip install git+https://github.com/BaumSebastian/DaRUS-Dataset-Interaction.git
 uv pip install git+https://github.com/BaumSebastian/DaRUS-Dataset-Interaction.git
 ```
 
-### From Source
+## CLI Usage
 
+After installation, you can use the command line interface:
+
+### Basic Usage
+Download all files from a dataset to `./data` directory:
 ```bash
-git clone https://github.com/BaumSebastian/DaRUS-Dataset-Interaction.git
-cd DaRUS-Dataset-Interaction
-pip install .
+darus-download --url "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801"
 ```
 
-### Development Setup
-
+### Specify Download Path
+Choose where to save the downloaded files:
 ```bash
-git clone https://github.com/BaumSebastian/DaRUS-Dataset-Interaction.git
-cd DaRUS-Dataset-Interaction
-pip install -e .[dev]  # Includes testing tools
+darus-download --url "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801" --path "./downloads"
 ```
+
+### Download Specific Files Only
+Download only selected files instead of the entire dataset:
+```bash
+darus-download --url "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801" --files metadata.csv data.zip
+```
+
+### Private Datasets with API Token
+Access restricted datasets using your DaRUS API token:
+```bash
+darus-download --url "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801" --token "your-api-token"
+```
+
+### Use Custom Config File
+Store settings in a YAML file for repeated use:
+```bash
+darus-download --config config.yaml
+```
+
+**Available Arguments:**
+- `--config, -c`: Config file path (optional)
+- `--url, -u`: Dataset URL
+- `--path, -p`: Download directory path (default: `./data`)
+- `--token, -t`: API token for authentication
+- `--files, -f`: Specific files to download (space-separated)
+- `--help`: Show help message
 
 ## Python API Usage
 
@@ -177,45 +209,118 @@ Downloading 113525_116825.zip ━━━╸━━━━━━━━━━━━�
 ....
 ```
 
-## CLI Usage (for developers)
+## Development
 
-If you cloned the repository, you can use the command line interface:
+### Setup Development Environment
 
+Clone the repository and install in development mode:
 ```bash
-# Basic usage with default config
-python main.py
-
-# Override specific settings
-python main.py --url "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801" --path "./downloads"
-
-# Use custom config file
-python main.py --config config_private.yaml
-
-# Download specific files only
-python main.py --files metadata.csv data.zip
-
-# Private datasets with API token
-python main.py --token "your-api-token"
-
-# Combine multiple arguments
-python main.py --path "/your/download/path" --token "your-token" --files metadata.csv
+git clone https://github.com/BaumSebastian/DaRUS-Dataset-Interaction.git
+cd DaRUS-Dataset-Interaction
+pip install -e .[dev]  # Includes testing tools
 ```
 
-**Available Arguments:**
-- `--config, -c`: Config file path (default: `config.yaml`)
-- `--url, -u`: Dataset URL
-- `--path, -p`: Download directory path
-- `--token, -t`: API token for authentication
-- `--files, -f`: Specific files to download (space-separated)
-- `--help`: Show help message
+### Running from Source
 
-## License
+Test the CLI directly from source:
+```bash
+python -m darus.cli --url "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801"
+```
 
-[GNU V3](LICENSE)
+### Running Tests
 
-## Contributing
+Run the full test suite:
+```bash
+pytest -v
+```
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Run tests with coverage:
+```bash
+pytest --cov=darus --cov-report=html
+```
+
+Run specific test file:
+```bash
+pytest tests/test_dataset.py -v
+```
+
+### Code Quality
+
+Format code with Black:
+```bash
+black darus/ tests/
+```
+
+Check code quality:
+```bash
+# Type checking (if mypy is installed)
+mypy darus/
+
+# Linting
+flake8 darus/ tests/
+```
+
+### Project Structure
+
+```
+darus/
+├── darus/              # Main package
+│   ├── __init__.py     # Package initialization
+│   ├── cli.py          # Command line interface
+│   ├── Dataset.py      # Main Dataset class
+│   ├── DatasetFile.py  # File download and processing
+│   └── utils.py        # Utility functions and logging
+├── tests/              # Test suite
+│   ├── fixtures/       # Test data and fixtures
+│   ├── test_dataset.py # Dataset class tests
+│   └── test_dataset_file.py # DatasetFile tests
+├── config.yaml         # Example configuration
+└── setup.py           # Package configuration
+```
+
+### VSCode Debugging
+
+For VSCode users, you can create `.vscode/launch.json` with debug configurations:
+
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug CLI - Demo Dataset",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "darus.cli",
+            "args": [
+                "--url", "https://demo.dataverse.org/dataset.xhtml?persistentId=doi:10.70122/FK2/NIVKU0",
+                "--path", "./debug_downloads"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Debug Tests - All",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": ["-v", "tests/"],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
+```
+
+Set breakpoints and press `F5` to start debugging.
+
+### Contributing Guidelines
+
+1. **Fork the repository** and create a feature branch
+2. **Write tests** for new functionality
+3. **Ensure tests pass**: `pytest -v`
+4. **Format code**: `black darus/ tests/`
+5. **Update documentation** if needed
+6. **Submit a pull request** with a clear description
 
 ## Additional Resources
 
