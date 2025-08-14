@@ -3,9 +3,13 @@ import yaml
 from pathlib import Path
 
 from darus import Dataset
+from darus.utils import setup_logging
 
 
 def main():
+    # Setup logging
+    setup_logging()
+    
     # Get the directory where this script is located
     script_dir = Path(__file__).parent
     default_config = script_dir / "config.yaml"

@@ -23,7 +23,7 @@ from rich.table import Table
 from rich.text import Text
 
 from .DatasetFile import DatasetFile
-from .utils import dir_exists
+from .utils import dir_exists, get_logger
 
 
 class Dataset:
@@ -91,13 +91,16 @@ class Dataset:
                 DatasetFile(file_info, self.server_url) for file_info in files_info
             ]
         except KeyError as ke:
-            print(f"Couldn't find following key in web response:{ke}")
+            logger = get_logger(__name__)
+            logger.error(f"Couldn't find following key in web response: {ke}")
             self.download_files = []
         except requests.HTTPError as exception:
-            print(f"An error occured while trying to access dataset.\n{str(exception)}")
+            logger = get_logger(__name__)
+            logger.error(f"An error occurred while trying to access dataset: {str(exception)}")
             self.download_files = []
         except Exception as exception:
-            print(exception)
+            logger = get_logger(__name__)
+            logger.error(f"Unexpected error: {exception}")
             self.download_files = []
 
     def summary(self):
@@ -286,6 +289,8 @@ class Dataset:
                                 completed=f.get_filesize(False),
                             )
             else:
-                print(f"No files to download.")
+                logger = get_logger(__name__)
+                logger.info("No files to download.")
         else:
-            print("Download aborted.")
+            logger = get_logger(__name__)
+            logger.info("Download aborted.")

@@ -7,6 +7,8 @@ import os
 from pathlib import Path
 from urllib.parse import urlparse
 
+from .utils import get_logger
+
 
 class DatasetFile:
     def __init__(self, json: dict, server_url: str, download_original: bool = True):
@@ -102,17 +104,21 @@ class DatasetFile:
                         yield (downloaded)
                         f.write(chunk)
         except FileExistsError as fe:
-            print(
+            logger = get_logger(__name__)
+            logger.error(
                 f"The subdirectory '{dir}' could not be created, but is expected from {self.name}."
             )
         except requests.exceptions.HTTPError as he:
-            print(
-                f"Error wile trying to download '{self.name}' from '{self._url}'.\n{he}"
+            logger = get_logger(__name__)
+            logger.error(
+                f"Error while trying to download '{self.name}' from '{self._url}': {he}"
             )
         except MemoryError as me:
-            print(f"MemoryError encountered while downloading '{self.name}'.\n{me}")
+            logger = get_logger(__name__)
+            logger.error(f"MemoryError encountered while downloading '{self.name}': {me}")
         except Exception as e:
-            print(f"An unexpected error occurred: {e}")
+            logger = get_logger(__name__)
+            logger.error(f"An unexpected error occurred: {e}")
 
     def validate(self, chunk_size=8192) -> bool:
         """
@@ -146,8 +152,9 @@ class DatasetFile:
         if self.file_path and os.path.isfile(self.file_path):
             try:
                 os.remove(self.file_path)
-            except OsError as e:
-                print(f"Error while trying to delete {self.file_path}")
+            except OSError as e:
+                logger = get_logger(__name__)
+                logger.error(f"Error while trying to delete {self.file_path}: {e}")
             else:
                 removed_successfully = True
         return removed_successfully
@@ -163,6 +170,7 @@ class DatasetFile:
                     with zipfile.ZipFile(self.file_path, "r") as zip_ref:
                         zip_ref.extractall(self.file_path.parent)
                 except Exception as e:
-                    print(f"Error while trying to extract {self.file_path}.\n{e}")
+                    logger = get_logger(__name__)
+                    logger.error(f"Error while trying to extract {self.file_path}: {e}")
                     processed_successfully = False
         return processed_successfully
