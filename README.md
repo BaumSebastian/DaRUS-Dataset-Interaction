@@ -38,11 +38,17 @@ Currently the web interface of darus limits the size of downloads by 2 GB, which
 
 ## Installation
 
-```bash
-# Using pip
-pip install git+https://github.com/BaumSebastian/DaRUS-Dataset-Interaction.git
+This repository can be installed using pip or uv (recommended).
 
-# Using uv (faster) - https://github.com/astral-sh/uv
+### pip
+
+```bash
+pip install git+https://github.com/BaumSebastian/DaRUS-Dataset-Interaction.git
+```
+
+### uv
+
+```bash
 uv pip install git+https://github.com/BaumSebastian/DaRUS-Dataset-Interaction.git
 ```
 
