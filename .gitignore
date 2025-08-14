@@ -1,6 +1,9 @@
 # Ignore the config in order to avoid tracking tokens etc.
 config_private.yaml
 
+# vscode
+.vscode
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
