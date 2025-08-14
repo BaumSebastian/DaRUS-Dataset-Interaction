@@ -46,5 +46,10 @@ setup(
             "black>=23.0.0",
         ]
     },
+    entry_points={
+        "console_scripts": [
+            "darus-download=main:main",
+        ],
+    },
     zip_safe=False,  # Ensures proper installation
 )
