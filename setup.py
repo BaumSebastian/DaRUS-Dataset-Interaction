@@ -48,7 +48,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "darus-download=main:main",
+            "darus-download=darus.cli:main",
         ],
     },
     zip_safe=False,  # Ensures proper installation
