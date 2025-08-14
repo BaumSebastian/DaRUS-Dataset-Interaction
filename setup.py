@@ -15,11 +15,20 @@ setup(
     url="https://github.com/BaumSebastian/DaRUS-Dataset-Interaction",
     packages=find_packages(),
     license="GPL-3.0",
-    python_requires=">=3.6",
+    python_requires=">=3.8",
+    keywords=["dataverse", "darus", "dataset", "download", "research-data", "stuttgart"],
+    project_urls={
+        "Bug Reports": "https://github.com/BaumSebastian/DaRUS-Dataset-Interaction/issues",
+        "Source": "https://github.com/BaumSebastian/DaRUS-Dataset-Interaction",
+        "Documentation": "https://github.com/BaumSebastian/DaRUS-Dataset-Interaction#readme",
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Science/Research",
+        "Topic :: Scientific/Engineering",
     ],
     install_requires=[
         "requests>=2.25.0",  # Added version constraints for better compatibility
