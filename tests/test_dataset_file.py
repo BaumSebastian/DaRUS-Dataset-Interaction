@@ -1,6 +1,7 @@
 """Unit tests for the DatasetFile class."""
 
 import json
+import logging
 import pytest
 import responses
 import hashlib
@@ -229,7 +230,7 @@ class TestDatasetFileDownload:
             assert file.file_path == expected_path
             assert expected_path.parent.exists()
 
-    def test_download_http_error(self, mock_file_info, temp_dir):
+    def test_download_http_error(self, mock_file_info, temp_dir, caplog):
         """Test download handles HTTP errors gracefully."""
         server_url = "https://demo.dataverse.org"
         file = DatasetFile(mock_file_info, server_url)
@@ -239,13 +240,11 @@ class TestDatasetFileDownload:
                 responses.GET, f"{server_url}/api/access/datafile/98765/", status=404
             )
 
-            with patch("builtins.print") as mock_print:
-                list(file.download(temp_dir))
+            list(file.download(temp_dir))
 
-                mock_print.assert_called()
-                assert "Error wile trying to download" in str(mock_print.call_args)
+            assert "error while trying to download" in caplog.text.lower()
 
-    def test_download_memory_error(self, mock_file_info, temp_dir):
+    def test_download_memory_error(self, mock_file_info, temp_dir, caplog):
         """Test download handles memory errors."""
         server_url = "https://demo.dataverse.org"
         file = DatasetFile(mock_file_info, server_url)
@@ -256,11 +255,9 @@ class TestDatasetFileDownload:
             mock_response.iter_content.side_effect = MemoryError("Out of memory")
             mock_get.return_value.__enter__.return_value = mock_response
 
-            with patch("builtins.print") as mock_print:
-                list(file.download(temp_dir))
+            list(file.download(temp_dir))
 
-                mock_print.assert_called()
-                assert "MemoryError" in str(mock_print.call_args)
+            assert "memoryerror encountered while downloading" in caplog.text.lower()
 
 
 class TestDatasetFileValidation:
@@ -429,7 +426,7 @@ class TestDatasetFileProcessing:
         assert (temp_dir / "file1.txt").exists()
         assert (temp_dir / "file2.txt").exists()
 
-    def test_zip_extraction_error(self, temp_dir):
+    def test_zip_extraction_error(self, temp_dir, caplog):
         """Test ZIP extraction with corrupted file."""
         file_info = {
             "dataFile": {
@@ -450,11 +447,11 @@ class TestDatasetFileProcessing:
         corrupted_zip.write_bytes(b"This is not a valid ZIP file")
         file.file_path = corrupted_zip
 
-        with patch("builtins.print") as mock_print:
+        with caplog.at_level(logging.ERROR):
             result = file.process()
 
             assert result is False
-            mock_print.assert_called()
+            assert "error while trying to extract" in caplog.text.lower()
 
     def test_non_zip_processing(self, temp_dir):
         """Test processing of non-ZIP files (should do nothing)."""

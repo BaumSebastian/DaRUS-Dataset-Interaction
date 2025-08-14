@@ -1,6 +1,7 @@
 """Unit tests for the Dataset class."""
 
 import json
+import logging
 import pytest
 import responses
 from unittest.mock import patch, MagicMock
@@ -98,7 +99,7 @@ class TestDatasetInformationRetrieval:
             assert len(dataset.download_files) == 2
             assert isinstance(dataset.download_files[0], DatasetFile)
 
-    def test_http_error_handling(self, demo_dataset_urls):
+    def test_http_error_handling(self, demo_dataset_urls, caplog):
         """Test handling of HTTP errors."""
         url = demo_dataset_urls[0]
 
@@ -109,13 +110,12 @@ class TestDatasetInformationRetrieval:
                 status=404,
             )
 
-            with patch("builtins.print") as mock_print:
-                dataset = Dataset(url)
+            dataset = Dataset(url)
 
-                assert len(dataset.download_files) == 0
-                mock_print.assert_called()
+            assert len(dataset.download_files) == 0
+            assert "error occurred while trying to access dataset" in caplog.text.lower()
 
-    def test_invalid_json_response(self, demo_dataset_urls):
+    def test_invalid_json_response(self, demo_dataset_urls, caplog):
         """Test handling of invalid JSON response."""
         url = demo_dataset_urls[0]
 
@@ -127,13 +127,12 @@ class TestDatasetInformationRetrieval:
                 status=200,
             )
 
-            with patch("builtins.print") as mock_print:
-                dataset = Dataset(url)
+            dataset = Dataset(url)
 
-                assert len(dataset.download_files) == 0
-                mock_print.assert_called()
+            assert len(dataset.download_files) == 0
+            assert "unexpected error" in caplog.text.lower()
 
-    def test_missing_keys_in_response(self, demo_dataset_urls):
+    def test_missing_keys_in_response(self, demo_dataset_urls, caplog):
         """Test handling of missing keys in API response."""
         url = demo_dataset_urls[0]
 
@@ -145,11 +144,10 @@ class TestDatasetInformationRetrieval:
                 status=200,
             )
 
-            with patch("builtins.print") as mock_print:
-                dataset = Dataset(url)
+            dataset = Dataset(url)
 
-                assert len(dataset.download_files) == 0
-                mock_print.assert_called()
+            assert len(dataset.download_files) == 0
+            assert "couldn't find following key" in caplog.text.lower()
 
 
 class TestDatasetSummary:
@@ -303,7 +301,7 @@ class TestDatasetDownload:
                 mock_process.assert_called_once()
                 mock_remove.assert_called_once()
 
-    def test_no_files_to_download(self, demo_dataset_urls, temp_dir):
+    def test_no_files_to_download(self, demo_dataset_urls, temp_dir, caplog):
         """Test download when no files are available."""
         url = demo_dataset_urls[0]
 
@@ -325,10 +323,10 @@ class TestDatasetDownload:
 
             dataset = Dataset(url)
 
-            with patch("builtins.print") as mock_print:
+            with caplog.at_level(logging.INFO):
                 dataset.download(str(temp_dir))
 
-                mock_print.assert_called_with("No files to download.")
+                assert "no files to download" in caplog.text.lower()
 
     @staticmethod
     def _mock_dataset_response():
