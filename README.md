@@ -27,29 +27,21 @@ Currently the web interface of darus limits the size of downloads by 2 GB, which
     - [Post Processing](#post-processing)
     - [Sample Output](#sample-output)
   - [Development](#development)
+    - [Project Structure](#project-structure)
     - [Setup Development Environment](#setup-development-environment)
     - [Running from Source](#running-from-source)
     - [Running Tests](#running-tests)
     - [Code Quality](#code-quality)
-    - [Project Structure](#project-structure)
     - [VSCode Debugging](#vscode-debugging)
     - [Contributing Guidelines](#contributing-guidelines)
   - [Additional Resources](#additional-resources)
 
 ## Installation
 
-This repository can be installed using pip or uv (recommended).
-
-### pip
+This repository can be installed using `pip` or [`uv`](https://github.com/astral-sh/uv) (recommended).
 
 ```bash
 pip install git+https://github.com/BaumSebastian/DaRUS-Dataset-Interaction.git
-```
-
-### uv
-
-```bash
-uv pip install git+https://github.com/BaumSebastian/DaRUS-Dataset-Interaction.git
 ```
 
 ## CLI Usage
@@ -71,7 +63,7 @@ darus-download --url "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=
 ### Download Specific Files Only
 Download only selected files instead of the entire dataset:
 ```bash
-darus-download --url "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801" --files metadata.csv
+darus-download --url "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801" --files metadata.tab
 ```
 
 ### Private Datasets with API Token
@@ -87,11 +79,11 @@ darus-download --config config.yaml
 ```
 
 **Available Arguments:**
-- `--config, -c`: Config file path (optional)
 - `--url, -u`: Dataset URL
-- `--path, -p`: Download directory path (default: `./data`)
-- `--token, -t`: API token for authentication
-- `--files, -f`: Specific files to download (space-separated)
+- `--path, -p`: Download directory path [optional] (default: `./data`)
+- `--token, -t`: API token for authentication [optional]
+- `--files, -f`: Specific files to download [optional] (space-separated)
+- `--config, -c`: Config file path [optional]
 - `--help`: Show help message
 
 ## Python API Usage
@@ -217,6 +209,24 @@ Downloading 113525_116825.zip ━━━╸━━━━━━━━━━━━�
 
 ## Development
 
+### Project Structure
+
+```
+darus/
+├── darus/              # Main package
+│   ├── __init__.py     # Package initialization
+│   ├── cli.py          # Command line interface
+│   ├── Dataset.py      # Main Dataset class
+│   ├── DatasetFile.py  # File download and processing
+│   └── utils.py        # Utility functions and logging
+├── tests/              # Test suite
+│   ├── fixtures/       # Test data and fixtures
+│   ├── test_dataset.py # Dataset class tests
+│   └── test_dataset_file.py # DatasetFile tests
+├── config.yaml         # Example configuration
+└── setup.py           # Package configuration
+```
+
 ### Setup Development Environment
 
 Clone the repository and install in development mode:
@@ -264,24 +274,6 @@ mypy darus/
 
 # Linting
 flake8 darus/ tests/
-```
-
-### Project Structure
-
-```
-darus/
-├── darus/              # Main package
-│   ├── __init__.py     # Package initialization
-│   ├── cli.py          # Command line interface
-│   ├── Dataset.py      # Main Dataset class
-│   ├── DatasetFile.py  # File download and processing
-│   └── utils.py        # Utility functions and logging
-├── tests/              # Test suite
-│   ├── fixtures/       # Test data and fixtures
-│   ├── test_dataset.py # Dataset class tests
-│   └── test_dataset_file.py # DatasetFile tests
-├── config.yaml         # Example configuration
-└── setup.py           # Package configuration
 ```
 
 ### VSCode Debugging
