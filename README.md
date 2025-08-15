@@ -60,11 +60,17 @@ Choose where to save the downloaded files:
 darus-download --url "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801" --path "./downloads"
 ```
 
+**Note:** Every file has a value _directory_ in its metadata (see [Add a File to Dataset](https://guides.dataverse.org/en/6.5/api/native-api.html#id90)). The programm will create and store the downloaded file in the specific _directory_ according to `path/directory`.
+
+
 ### Download Specific Files Only
 Download only selected files instead of the entire dataset:
 ```bash
 darus-download --url "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4801" --files metadata.tab
 ```
+
+**Note:** DaRUS converts tabular data like .csv files into .tab format when uploaded. This package downloads the original file format (like .csv) when available. As metadata.tab is the displayed file by darus, this file still needs to be added as `--files` and not metadata.csv.
+
 
 ### Private Datasets with API Token
 Access restricted datasets using your DaRUS API token:
@@ -123,7 +129,7 @@ ds = Dataset(url)
 ds.download(path, files=files)
 ```
 
-**Note:** DaRUS converts tabular data like .csv files into .tab format. This package downloads the original file format (e.g., .csv) when available.
+**Note:** DaRUS converts tabular data like .csv files into .tab format when uploaded. This package downloads the original file format (like .csv) when available. As metadata.tab is the displayed file by darus, this file still needs to be added as `--files` and not metadata.csv.
 
 ### Private Datasets
 
@@ -245,30 +251,27 @@ python -m darus.cli --url "https://darus.uni-stuttgart.de/dataset.xhtml?persiste
 
 ### Running Tests
 
-Run the full test suite:
+Running the tests locally.
+
 ```bash
+# Run the full test suite:
 pytest -v
-```
 
-Run tests with coverage:
-```bash
+# Run tests with coverage:
 pytest --cov=darus --cov-report=html
-```
 
-Run specific test file:
-```bash
+# Run specific test file:
 pytest tests/test_dataset.py -v
 ```
 
 ### Code Quality
 
-Format code with Black:
-```bash
-black darus/ tests/
-```
+How to ensure a specific code quality.
 
-Check code quality:
 ```bash
+# Format code with Black:
+black darus/ tests/
+
 # Type checking (if mypy is installed)
 mypy darus/
 
