@@ -4,7 +4,7 @@
 [![GitHub release](https://img.shields.io/github/v/release/BaumSebastian/DaRUS-Dataset-Interaction)](https://github.com/BaumSebastian/DaRUS-Dataset-Interaction/releases)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![GitHub issues](https://img.shields.io/github/issues/BaumSebastian/DaRUS-Dataset-Interaction)](https://github.com/BaumSebastian/DaRUS-Dataset-Interaction/issues)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/BaumSebastian/DaRUS-Dataset-Interaction/graphs/commit-activity)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-no-red.svg)](https://github.com/BaumSebastian/DaRUS-Dataset-Interaction/graphs/commit-activity)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 A Python package for easily downloading datasets from the [DaRUS](https://darus.uni-stuttgart.de/) (DataRepository of the University of Stuttgart) platform. 
